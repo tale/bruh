@@ -6,7 +6,7 @@ if (DEBUG_MODE) {
 	// Global Initialization
 	const observer = new PerformanceObserver(list => {
 		for (const entry of list.getEntries()) {
-			log.debug('perf_hook: %s - %sms', entry.name, entry.duration.toFixed(4))
+			log.debug('perf: %s - %sms', entry.name, entry.duration.toFixed(4))
 		}
 	})
 
