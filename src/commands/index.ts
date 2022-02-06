@@ -1,4 +1,8 @@
-import { Command } from '../types/command'
+import { Command } from '../classes/command'
+import Update from './update'
 
-export const commands: Command[] = []
+
+export const commands: Command[] = [
+	Update
+]
 
