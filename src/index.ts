@@ -1,8 +1,10 @@
-import { Command } from './classes'
-import { commands } from './commands'
-import './interface/color'
-import { log } from './interface/log'
-import { observeMetric } from './utils/metrics'
+import { commands } from 'commands'
+import { color } from 'interface'
+import { log } from 'interface'
+import { observeMetric } from 'utils'
+
+// Initialize Color Support
+color
 
 observeMetric('argument-parse', async () => {
 	// The first two args can always be ignored

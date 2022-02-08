@@ -1,4 +1,4 @@
-import { Command } from '../classes/command'
+import { Command } from 'classes/command'
 import Update from './update'
 
 

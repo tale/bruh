@@ -1,8 +1,8 @@
 import { performance, PerformanceObserver } from 'node:perf_hooks'
-import { DEBUG_MODE } from '../constants'
-import { log } from '../interface/log'
+import { log } from 'interface'
+import { config } from 'utils'
 
-if (DEBUG_MODE) {
+if (config.debug) {
 	// Global Initialization
 	const observer = new PerformanceObserver(list => {
 		for (const entry of list.getEntries()) {
@@ -15,7 +15,7 @@ if (DEBUG_MODE) {
 
 // Metric functions should only be void because the intention is to test scoped code
 export const observeMetric = (metricName: string, metricOperation: () => void) => {
-	if (DEBUG_MODE) {
+	if (config.debug) {
 		performance.mark(`${metricName}[start]`)
 		metricOperation()
 		performance.mark(`${metricName}[end]`)

@@ -1,8 +1,8 @@
-import { DEBUG_MODE } from '../constants'
+import { config } from 'utils'
 
 export const log = {
 	debug: (format: string, ...args: unknown[]) => {
-		if (DEBUG_MODE) {
+		if (config.debug) {
 			const prefix = ''.dim('[').magenta('%').dim(']')
 			console.log(`${prefix} ${format}`, ...args)
 		}
