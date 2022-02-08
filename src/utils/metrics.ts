@@ -13,14 +13,15 @@ if (config.debug) {
 	observer.observe({ entryTypes: ['measure'], buffered: true })
 }
 
-// Metric functions should only be void because the intention is to test scoped code
-export const observeMetric = (metricName: string, metricOperation: () => void) => {
+export const startMetric = (name: string) => {
 	if (config.debug) {
-		performance.mark(`${metricName}[start]`)
-		metricOperation()
-		performance.mark(`${metricName}[end]`)
-		performance.measure(metricName, `${metricName}[start]`, `${metricName}[end]`)
-	} else {
-		metricOperation()
+		performance.mark(`${name}[start]`)
+	}
+}
+
+export const endMetric = (name: string) => {
+	if (config.debug) {
+		performance.mark(`${name}[end]`)
+		performance.measure(name, `${name}[start]`, `${name}[end]`)
 	}
 }
