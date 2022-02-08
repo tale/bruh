@@ -1,10 +1,13 @@
 {
+	"exclude": ["tsup.config.ts"],
 	"compilerOptions": {
+		"baseUrl": "./src",
 		"rootDir": "./src",
 		"outDir": "./dist",
 		"target": "ESNext",
-		"module": "CommonJS",
+		"module": "ESNext",
 		"skipLibCheck": true,
-		"strict": true,
+		"moduleResolution": "Node",
+		"strict": true
 	}
 }
