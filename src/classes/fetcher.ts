@@ -5,15 +5,8 @@ import { release } from 'node:os'
 import { join } from 'node:path'
 import { arch } from 'node:process'
 import { Readable } from 'node:stream'
-import { config } from '../utils/config'
-
-export type Formula = {
-	name: string
-	version: string
-	blob: string
-	dependencies: string[]
-	revision: number
-}
+import { BrewFormula, BruhFormula } from 'types'
+import { config } from 'utils/config'
 
 class GHCR {
 	private http = axios.create({
@@ -27,7 +20,7 @@ class GHCR {
 		}
 	})
 
-	async download({ name, blob, version }: Formula) {
+	async download({ name, blob, version }: BruhFormula) {
 		await rm(join(config.paths.tiffyCache, `${name}_${version}.bottle.tar.gz`), { force: true })
 
 		return await new Promise(async (resolve, reject) => {
@@ -46,8 +39,8 @@ class GHCR {
 	}
 }
 
-export class Fetcher {
-	private static prefix = function() {
+class API {
+	private prefix = function() {
 		const prefix = arch.concat('_').replace('x64_', '') // Only arm64 is prefixed
 		const version = parseInt(release().split('.')[0]) // Major XNU Version only
 
@@ -56,13 +49,38 @@ export class Fetcher {
 			[20, prefix.concat('big_sur')]
 		])
 
-		if (!map.has(version)) throw new Error('Unable to get version prefix.')
-		return map.get(version)
+		return map.get(version) ?? 'unknown' // TODO: Error handling
 	}()
 
-	static API: {
+	private http = axios.create({
+		baseURL: 'https://formulae.brew.sh/api',
+		timeout: 1000 * 3, // 3 Seconds
+		headers: {
+			'Accept': 'application/json',
+			'User-Agent': 'Bruh 1.0'
+		}
+	})
 
+	async allFormulae() {
+		const { data } = await this.http.get<BrewFormula[]>('/formula.json')
+		const compatible = data.filter(pkg => pkg.bottle.stable?.files[this.prefix] || pkg.bottle.stable?.files['all'])
+
+		// Only map and return the values we need. Less data parsing
+		return compatible.map(pkg => {
+			const formula: BruhFormula = {
+				name: pkg.name,
+				revision: parseInt(pkg.revision),
+				version: pkg.versions.stable,
+				blob: pkg.bottle.stable?.files[this.prefix]?.sha256 ?? pkg.bottle.stable!.files['all']?.sha256,
+				dependencies: pkg.dependencies
+			}
+
+			return formula
+		})
 	}
+}
 
+export class Fetcher {
+	static API = new API()
 	static GHCR = new GHCR()
 }
