@@ -1,5 +1,6 @@
 {
 	"scripts": {
+		"dev": "tsup --watch",
 		"package": "pkg -t node16-macos-x64 dist/index.js -o bin/bruh",
 		"build": "tsc --noEmit && tsup && pnpm -s package"
 	},
