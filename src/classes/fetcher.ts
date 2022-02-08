@@ -21,12 +21,12 @@ class GHCR {
 	})
 
 	async download({ name, blob, version }: BruhFormula) {
-		await rm(join(config.paths.tiffyCache, `${name}_${version}.bottle.tar.gz`), { force: true })
+		await rm(join(config.paths.tiffy, `${name}_${version}.bottle.tar.gz`), { force: true })
 
 		return await new Promise(async (resolve, reject) => {
 			try {
 				const { data } = await this.http.get<Readable>(`/${name.replace('@', '/')}/blobs/sha256:${blob}`)
-				const writeStream = createWriteStream(join(config.paths.tiffyCache, `${name}_${version}.bottle.tar.gz`), 'binary')
+				const writeStream = createWriteStream(join(config.paths.tiffy, `${name}_${version}.bottle.tar.gz`), 'binary')
 				data.pipe(writeStream)
 
 				writeStream.on('finish', resolve)

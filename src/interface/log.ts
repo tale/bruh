@@ -16,5 +16,17 @@ export const log = {
 	error: (format: string, ...args: unknown[]) => {
 		const prefix = ''.dim('[').red('x').dim(']')
 		console.log(`${prefix} ${format}`, ...args)
+	},
+
+	warning: (format: string, ...args: unknown[]) => {
+		const prefix = ''.dim('[').yellow('!').dim(']')
+		console.log(`${prefix} ${format}`, ...args)
+	},
+
+	special: {
+		update: (source: string) => {
+			const prefix = ''.dim('[').green('>').dim(']')
+			console.log(`${prefix} Updating %s`, source)
+		}
 	}
 }
