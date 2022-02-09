@@ -6,6 +6,7 @@ export default defineConfig({
 	target: 'node16',
 	splitting: false,
 	platform: 'node',
+	sourcemap: true,
 	minify: true,
 	clean: true
 })

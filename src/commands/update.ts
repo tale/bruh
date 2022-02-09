@@ -1,5 +1,4 @@
-import { Command } from 'classes'
-import { Fetcher } from 'classes/fetcher'
+import { Command, Fetcher } from 'classes'
 import { log } from 'interface'
 import { createWriteStream } from 'node:fs'
 import { mkdir, rm } from 'node:fs/promises'
