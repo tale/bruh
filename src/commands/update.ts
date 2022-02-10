@@ -21,7 +21,7 @@ export default new Command<Flags>({
 		}
 	]
 }, async (flags, _args) => {
-	log.warning('Homebrew Casks and Taps are still currently unsupported')
+	log.warning('Homebrew Casks and Taps are unsupported')
 
 	if (flags.force) {
 		log.warning('Force rebuilding the entire cache')
