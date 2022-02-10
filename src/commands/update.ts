@@ -12,7 +12,7 @@ interface Flags {
 
 export default new Command<Flags>({
 	name: 'update',
-	aliases: [],
+	description: 'Update the list of available formula or casks',
 	flags: [
 		{
 			name: 'force',

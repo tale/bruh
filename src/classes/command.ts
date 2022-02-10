@@ -6,7 +6,7 @@ type Flag = {
 
 type CommandOptions = {
 	name: string
-	aliases: string[],
+	description: string
 	flags: Flag[]
 }
 

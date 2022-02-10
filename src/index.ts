@@ -11,7 +11,7 @@ startMetric('argument-parse')
 
 const args = process.argv.slice(2) // The first two args can always be ignored
 const directive = args.shift()?.trim() ?? 'help'
-const command = commands.find(v => v.options.name === directive || v.options.aliases.includes(directive))
+const command = commands.find(v => v.options.name === directive)
 if (!command) {
 	log.error('Unknown Command: %s', directive)
 	exit(1)
