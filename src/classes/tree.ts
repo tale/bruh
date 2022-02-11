@@ -2,6 +2,7 @@ import { log } from 'interface'
 import { createReadStream } from 'node:fs'
 import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
+import { argv0 } from 'node:process'
 import { createInterface } from 'node:readline'
 import { BruhFormula } from 'types'
 import { config } from 'utils'
@@ -13,7 +14,7 @@ type Dependencies = {
 
 export class Tree {
 	formula: BruhFormula
-	childTree: Tree[] = []
+	childTrees: Tree[] = []
 
 	static async from(formula: BruhFormula) {
 		const tree = new Tree(formula)
@@ -76,6 +77,32 @@ export class Tree {
 	}
 
 	private async generate() {
-		const {} = resolve(this.formula.dependencies)
+		const { resolved, unresolved } = await Tree.resolve(this.formula.dependencies)
+
+		if (unresolved.length > 0) {
+			const text = unresolved.map(value => ''.bold(value)).join(' ')
+			log.warning('Unable to resolve the following packages: %s', text)
+			log.error('Try running %s to resolve this.', ''.bold(`${argv0} update`))
+			return
+		}
+
+		for (const dependency of resolved) {
+			const tree = new Tree(dependency)
+			await tree.generate()
+			this.childTrees.push(tree)
+		}
+	}
+
+	flatten(builderArray?: BruhFormula[]) {
+		builderArray = builderArray ?? []
+
+		if (this.childTrees.length > 0) {
+			for (const child of this.childTrees) {
+				child.flatten(builderArray)
+			}
+		}
+
+		builderArray.push(this.formula)
+		return builderArray
 	}
 }
