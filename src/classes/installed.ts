@@ -1,5 +1,5 @@
 import { createWriteStream } from 'node:fs'
-import { readFile, rm } from 'node:fs/promises'
+import { access, readFile, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import { BruhFormula } from 'types'
 import { config } from 'utils'
@@ -8,8 +8,19 @@ export class InstalledPackage {
 	private formula: BruhFormula
 	private files: string[] = []
 
+	static async exists(formula: BruhFormula) {
+		try {
+			const path = join(config.paths.installed, `${formula.name}#${formula.version}#${formula.revision}.bruh`)
+			await access(join(path))
+			return true
+		} catch {
+			return false
+		}
+	}
+
 	static async delete(formula: BruhFormula) {
-		const data = await readFile(`${formula.name}#${formula.version}#${formula.revision}.bruh`, 'utf8')
+		const path = join(config.paths.installed, `${formula.name}#${formula.version}#${formula.revision}.bruh`)
+		const data = await readFile(path, 'utf8')
 		const lines = data.trim().split('\n')
 
 		const definition = lines.shift()
@@ -22,7 +33,7 @@ export class InstalledPackage {
 		})
 
 		await Promise.all(tasks)
-		await rm(join(config.paths.installed, `${formula.name}#${formula.version}#${formula.revision}.bruh`), { force: true })
+		await rm(join(path), { force: true })
 		// TODO: Delete linkPath stuff
 	}
 
