@@ -36,7 +36,7 @@ export default new Command<Flags>({
 		if (tap.startsWith('homebrew/')) {
 			log.special.update(tap)
 			const data = await Fetcher.API.allFormulae()
-			const cachePath = join(config.paths.tiffy, tap.replaceAll('/', '-'))
+			const cachePath = join(config.paths.tiffy, `${tap.replaceAll('/', '-')}.bruh`)
 			await writeFormulae(data, cachePath)
 		}
 	})
