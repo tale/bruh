@@ -1,8 +1,9 @@
 import { Command } from 'classes/command'
-import Update from './update'
+import install from './install'
+import update from './update'
 
 
-export const commands: Command[] = [
-	Update
-]
-
+export const commands = new Array<Command>(
+	install,
+	update
+)
