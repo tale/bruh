@@ -1,5 +1,5 @@
 import { Command, InstalledPackage, Tree } from 'classes'
-import { log } from 'interface'
+import { log, Prompt } from 'interface'
 import { existsSync, readdirSync } from 'node:fs'
 import { mkdir } from 'node:fs/promises'
 import { argv0 } from 'node:process'
@@ -8,6 +8,7 @@ import { config } from 'utils'
 
 interface Flags {
 	reinstall: boolean
+	yes: boolean
 }
 
 export default new Command<Flags>({
@@ -18,6 +19,11 @@ export default new Command<Flags>({
 			name: 'reinstall',
 			longFlag: '--reinstall',
 			shortFlag: '-r'
+		},
+		{
+			name: 'yes',
+			longFlag: '--yes',
+			shortFlag: '-y'
 		}
 	]
 }, async (flags, args) => {
@@ -79,10 +85,6 @@ export default new Command<Flags>({
 		})
 
 		allViewableDependencies.push(...niceDependencies)
-		for (const formula of result.value.packages) {
-			const indb = new InstalledPackage(formula)
-			indb.flush()
-		}
 	}
 
 	if (unresolved.length > 0) {
@@ -104,4 +106,24 @@ export default new Command<Flags>({
 	if (resolved.length === 0) {
 		return
 	}
+
+	log.info('The following new packages will be installed: %s', ''.bold(installCandidates.join(' ')))
+
+	const dependencies = [...new Set(allViewableDependencies)]
+	if (dependencies.length > 0) {
+		log.info('The following additional packages will be installed: %s', ''.dim(dependencies.join(' ')))
+	}
+
+	if (!flags.yes) {
+		const result = await Prompt.confirm('Proceed with the installation?')
+		if (!result) {
+			log.error('Aborting')
+			return
+		}
+	}
+
+	// Messy looking deduplication; but it's fast
+	const downloads = downloadRequests.filter((formula, index, array) => {
+		return array.findIndex(subformula => subformula.name === formula.name) === index
+	})
 })
