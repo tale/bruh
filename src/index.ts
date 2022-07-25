@@ -33,8 +33,10 @@ const execute = async () => {
 	log.debug('flags: %s', flags)
 	log.debug('args: %s', arguments_)
 
-	await command.execute(flags, arguments_)
+	const exitCode = await command.execute(flags, arguments_)
 	endMetric('command-execute')
+
+	exit(exitCode)
 }
 
 void execute()

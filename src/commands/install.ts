@@ -1,10 +1,10 @@
 import { Command, InstalledPackage, Tree } from 'classes'
 import { log, Prompt } from 'interface'
-import { existsSync, readdirSync } from 'node:fs'
-import { mkdir } from 'node:fs/promises'
+import { constants } from 'node:fs'
+import { access, mkdir } from 'node:fs/promises'
 import { argv0 } from 'node:process'
 import { BruhFormula } from 'types'
-import { config } from 'utils'
+import { config, exit_code } from 'utils'
 
 interface Flags {
 	reinstall: boolean;
@@ -32,8 +32,10 @@ export default new Command<Flags>({
 		return
 	}
 
-	// Check for package indexes, might be worth to try/catch readdir instead of exists?
-	if (!existsSync(config.paths.tiffy) || readdirSync(config.paths.tiffy).length === 0) {
+	try {
+		// Checking if our update cache is readable
+		await access(config.paths.tiffy, constants.R_OK)
+	} catch {
 		log.error('No available package indexes.')
 		log.error('Try running %s to resolve this.', ''.bold(`${argv0} update`))
 		return
@@ -62,9 +64,9 @@ export default new Command<Flags>({
 	const results = await Promise.allSettled(tasks)
 	for (const result of results) {
 		if (result.status !== 'fulfilled') {
-			const { name, unresolved } = result.reason
-			log.error('Cannot resolve the following dependencies for %s', ''.bold(name))
-			log.error(unresolved.join(' '))
+			const { name, unresolved: unresolvedDependencies } = result.reason
+			log.error('Cannot resolve the following dependencies for %s: %s', ''.bold(name), ''.dim(unresolvedDependencies.join(' ')))
+			unresolved.push(name)
 			continue
 		}
 
@@ -85,8 +87,8 @@ export default new Command<Flags>({
 	}
 
 	if (unresolved.length > 0) {
-		const list = ''.bold(unresolved.join(' '))
-		log.warning('Skipping the following unresolved packages: %s', list)
+		const list = ''.dim(unresolved.join(' '))
+		log.warning('Skipping the following packages due to errors: %s', list)
 		log.warning('Try running %s to resolve this.', ''.bold(`${argv0} update`))
 	}
 
@@ -104,10 +106,16 @@ export default new Command<Flags>({
 		return
 	}
 
+	if (installCandidates.length === 0) {
+		throw exit_code.error
+	}
+
+	log.blank()
 	log.info('The following new packages will be installed: %s', ''.bold(installCandidates.join(' ')))
 
 	const dependencies = [...new Set(allViewableDependencies)].sort()
 	if (dependencies.length > 0) {
+
 		log.info('The following additional packages will be installed: %s', ''.dim(dependencies.join(' ')))
 	}
 

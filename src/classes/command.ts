@@ -21,6 +21,15 @@ export class Command<Flags = any> {
 	}
 
 	async execute(flags: unknown, arguments_: string[]) {
-		await this.executor(flags as Flags, arguments_)
+		try {
+			await this.executor(flags as Flags, arguments_)
+			return 0
+		} catch (exitCode) {
+			if (typeof exitCode === 'number') {
+				return exitCode
+			}
+
+			console.log(exitCode)
+		}
 	}
 }
