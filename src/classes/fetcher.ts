@@ -46,8 +46,8 @@ class API {
 			.split('.')[0]) // Major XNU Version only
 
 		const map = new Map([
-			[21, [...prefix, 'big_sur']], // TODO: Handle older releases
-			[20, [...prefix, 'big_sur']]
+			[21, 'big_sur'], // TODO: Handle older releases
+			[20, 'big_sur']
 		])
 
 		return map.get(version) ?? 'unknown' // TODO: Error handling
@@ -68,15 +68,14 @@ class API {
 
 		// Only map and return the values we need. Less data parsing
 		return compatible.map(package_ => {
-			const formula: BruhFormula = {
+			return {
+				tap: 'homebrew/core',
 				name: package_.name,
 				revision: Number.parseInt(package_.revision),
 				version: package_.versions.stable,
 				blob: package_.bottle.stable?.files[this.prefix]?.sha256 ?? package_.bottle.stable!.files.all?.sha256,
 				dependencies: package_.dependencies
-			}
-
-			return formula
+			} as BruhFormula
 		})
 	}
 }
