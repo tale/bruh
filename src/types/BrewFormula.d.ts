@@ -1,18 +1,16 @@
 export type BrewFormula = {
-	name: string
+	name: string;
 	versions: {
-		stable: string
-	}
-	dependencies: string[]
-	revision: string
+		stable: string;
+	};
+	dependencies: string[];
+	revision: string;
 	bottle: {
 		stable?: {
-			files: {
-				[key: string]: {
-					url: string
-					sha256: string
-				}
-			}
-		}
-	}
+			files: Record<string, {
+				url: string;
+				sha256: string;
+			}>;
+		};
+	};
 }

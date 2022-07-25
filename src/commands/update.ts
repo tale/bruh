@@ -7,7 +7,7 @@ import { BruhFormula } from 'types'
 import { config } from 'utils'
 
 interface Flags {
-	force: boolean
+	force: boolean;
 }
 
 export default new Command<Flags>({
@@ -20,7 +20,7 @@ export default new Command<Flags>({
 			shortFlag: '-f'
 		}
 	]
-}, async (flags, _args) => {
+}, async (flags, _arguments) => {
 	log.warning('Homebrew Casks and Taps are unsupported')
 
 	if (flags.force) {
@@ -31,6 +31,10 @@ export default new Command<Flags>({
 	await mkdir(config.paths.tiffy, { recursive: true })
 
 	const taps = ['homebrew/core'] // TODO: Support proper Taps
+	const pkgs = new Set<string>()
+
+	Array.prototype.indexOf()
+
 	const tasks = taps.map(async tap => {
 		// Official taps can be handled through the API
 		if (tap.startsWith('homebrew/')) {
@@ -42,7 +46,7 @@ export default new Command<Flags>({
 	})
 
 	const results = await Promise.allSettled(tasks)
-	results.map((promise) => {
+	results.map(promise => {
 		if (promise.status === 'rejected') {
 			console.log(promise)
 			log.error(promise.reason)
@@ -50,15 +54,13 @@ export default new Command<Flags>({
 	})
 })
 
-const writeFormulae = async (formulae: BruhFormula[], path: string) => {
-	return new Promise((resolve, reject) => {
-		const stream = createWriteStream(path)
-		formulae.map(({ name, version, revision, blob, dependencies }) => {
-			const format = `${name}$${version}$$${revision}$$$${blob}$$$$${dependencies.join()}\n`
-			stream.write(format)
-		})
-
-		stream.on('error', reject)
-		stream.on('finish', resolve)
+const writeFormulae = async (formulae: BruhFormula[], path: string) => new Promise((resolve, reject) => {
+	const stream = createWriteStream(path)
+	formulae.map(({ name, version, revision, blob, dependencies }) => {
+		const format = `${name}|${version}|${revision}|${blob}|${dependencies.join(',')}\r`
+		stream.write(format)
 	})
-}
+
+	stream.on('error', reject)
+	stream.on('finish', resolve)
+})

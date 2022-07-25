@@ -9,13 +9,13 @@ import { BrewFormula, BruhFormula } from 'types'
 import { config } from 'utils/config'
 
 class GHCR {
-	private http = axios.create({
+	private readonly http = axios.create({
 		baseURL: 'https://ghcr.io/v2/homebrew/core/',
 		responseType: 'stream',
 		timeout: 1000 * 120, // 120 Seconds
 		headers: {
-			'Accept': 'application/vnd.oci.image.index.v1+json',
-			'Authorization': 'Bearer QQ==',
+			Accept: 'application/vnd.oci.image.index.v1+json',
+			Authorization: 'Bearer QQ==',
 			'User-Agent': 'Bruh 1.0'
 		}
 	})
@@ -23,7 +23,7 @@ class GHCR {
 	async download({ name, blob, version }: BruhFormula) {
 		await rm(join(config.paths.tiffy, `${name}_${version}.bottle.tar.gz`), { force: true })
 
-		return await new Promise(async (resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			try {
 				const { data } = await this.http.get<Readable>(`/${name.replace('@', '/')}/blobs/sha256:${blob}`)
 				const writeStream = createWriteStream(join(config.paths.tiffy, `${name}_${version}.bottle.tar.gz`), 'binary')
@@ -32,47 +32,48 @@ class GHCR {
 				writeStream.on('finish', resolve)
 				writeStream.on('error', reject)
 				data.on('error', reject)
-			} catch (e: any) {
-				console.error(e.message, name)
+			} catch (error: any) {
+				console.error(error.message, name)
 			}
 		})
 	}
 }
 
 class API {
-	private prefix = function() {
-		const prefix = arch.concat('_').replace('x64_', '') // Only arm64 is prefixed
-		const version = parseInt(release().split('.')[0]) // Major XNU Version only
+	private readonly prefix = (function () {
+		const prefix = [...arch, '_'].replace('x64_', '') // Only arm64 is prefixed
+		const version = Number.parseInt(release()
+			.split('.')[0]) // Major XNU Version only
 
 		const map = new Map([
-			[21, prefix.concat('big_sur')], // TODO: Handle older releases
-			[20, prefix.concat('big_sur')]
+			[21, [...prefix, 'big_sur']], // TODO: Handle older releases
+			[20, [...prefix, 'big_sur']]
 		])
 
 		return map.get(version) ?? 'unknown' // TODO: Error handling
-	}()
+	})()
 
-	private http = axios.create({
+	private readonly http = axios.create({
 		baseURL: 'https://formulae.brew.sh/api',
 		timeout: 1000 * 3, // 3 Seconds
 		headers: {
-			'Accept': 'application/json',
+			Accept: 'application/json',
 			'User-Agent': 'Bruh 1.0'
 		}
 	})
 
 	async allFormulae() {
 		const { data } = await this.http.get<BrewFormula[]>('/formula.json')
-		const compatible = data.filter(pkg => pkg.bottle.stable?.files[this.prefix] || pkg.bottle.stable?.files['all'])
+		const compatible = data.filter(package_ => package_.bottle.stable?.files[this.prefix] || package_.bottle.stable?.files.all)
 
 		// Only map and return the values we need. Less data parsing
-		return compatible.map(pkg => {
+		return compatible.map(package_ => {
 			const formula: BruhFormula = {
-				name: pkg.name,
-				revision: parseInt(pkg.revision),
-				version: pkg.versions.stable,
-				blob: pkg.bottle.stable?.files[this.prefix]?.sha256 ?? pkg.bottle.stable!.files['all']?.sha256,
-				dependencies: pkg.dependencies
+				name: package_.name,
+				revision: Number.parseInt(package_.revision),
+				version: package_.versions.stable,
+				blob: package_.bottle.stable?.files[this.prefix]?.sha256 ?? package_.bottle.stable!.files.all?.sha256,
+				dependencies: package_.dependencies
 			}
 
 			return formula
@@ -80,7 +81,7 @@ class API {
 	}
 }
 
-export class Fetcher {
-	static API = new API()
-	static GHCR = new GHCR()
+export const Fetcher = {
+	API: new API(),
+	GHCR: new GHCR()
 }

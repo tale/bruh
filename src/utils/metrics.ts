@@ -1,5 +1,5 @@
-import { performance, PerformanceObserver } from 'node:perf_hooks'
 import { log } from 'interface'
+import { performance, PerformanceObserver } from 'node:perf_hooks'
 import { config } from 'utils'
 
 if (config.debug) {

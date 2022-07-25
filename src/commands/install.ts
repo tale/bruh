@@ -7,8 +7,8 @@ import { BruhFormula } from 'types'
 import { config } from 'utils'
 
 interface Flags {
-	reinstall: boolean
-	yes: boolean
+	reinstall: boolean;
+	yes: boolean;
 }
 
 export default new Command<Flags>({
@@ -26,8 +26,8 @@ export default new Command<Flags>({
 			shortFlag: '-y'
 		}
 	]
-}, async (flags, args) => {
-	if (args.length === 0) {
+}, async (flags, arguments_) => {
+	if (arguments_.length === 0) {
 		log.error('You must supply at least one package to install')
 		return
 	}
@@ -41,7 +41,7 @@ export default new Command<Flags>({
 
 	await mkdir(config.paths.cache, { recursive: true })
 	await mkdir(config.paths.installed, { recursive: true })
-	const { resolved, unresolved } = await Tree.resolve(args)
+	const { resolved, unresolved } = await Tree.resolve(arguments_)
 
 	const tasks = resolved.map(async formula => {
 		const exists = await InstalledPackage.exists(formula)
@@ -50,7 +50,7 @@ export default new Command<Flags>({
 		return {
 			name: tree.formula.name,
 			packages: tree.flatten(),
-			exists: exists
+			exists
 		}
 	})
 
@@ -78,11 +78,8 @@ export default new Command<Flags>({
 		downloadRequests.push(...packages)
 
 		// Retrieves a nice list of all the dependencies for display
-		const niceDependencies = packages.filter(formula => {
-			return formula.name !== name
-		}).map(formula => {
-			return formula.name
-		})
+		const niceDependencies = packages.filter(formula => formula.name !== name)
+			.map(formula => formula.name)
 
 		allViewableDependencies.push(...niceDependencies)
 	}
@@ -94,7 +91,7 @@ export default new Command<Flags>({
 	}
 
 	if (currentlyInstalled.length > 0 && !flags.reinstall) {
-		const list = ''.bold(currentlyInstalled.join())
+		const list = ''.bold(currentlyInstalled.join(','))
 		log.error('The following packages are already installed: %s', list)
 		log.warning('To reinstall packages, try running %s or enabling the %s flag',
 			''.bold(`${argv0} reinstall`),
@@ -109,7 +106,7 @@ export default new Command<Flags>({
 
 	log.info('The following new packages will be installed: %s', ''.bold(installCandidates.join(' ')))
 
-	const dependencies = [...new Set(allViewableDependencies)]
+	const dependencies = [...new Set(allViewableDependencies)].sort()
 	if (dependencies.length > 0) {
 		log.info('The following additional packages will be installed: %s', ''.dim(dependencies.join(' ')))
 	}
@@ -123,7 +120,5 @@ export default new Command<Flags>({
 	}
 
 	// Messy looking deduplication; but it's fast
-	const downloads = downloadRequests.filter((formula, index, array) => {
-		return array.findIndex(subformula => subformula.name === formula.name) === index
-	})
+	const downloads = downloadRequests.filter((formula, index, array) => array.findIndex(subformula => subformula.name === formula.name) === index)
 })

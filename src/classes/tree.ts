@@ -8,14 +8,11 @@ import { BruhFormula } from 'types'
 import { config } from 'utils'
 
 type Dependencies = {
-	resolved: BruhFormula[]
-	unresolved: string[]
+	resolved: BruhFormula[];
+	unresolved: string[];
 }
 
 export class Tree {
-	formula: BruhFormula
-	childTrees: Tree[] = []
-
 	static async from(formula: BruhFormula) {
 		const tree = new Tree(formula)
 		await tree.generate()
@@ -32,13 +29,13 @@ export class Tree {
 
 			return new Promise<Dependencies>((resolve, reject) => {
 				reader.on('line', async line => {
-					for (const pkg of packages) {
-						if (!line.startsWith(pkg)) { // All caches start with the package name
+					for (const package_ of packages) {
+						if (!line.startsWith(package_)) { // All caches start with the package name
 							continue
 						}
 
 						// TODO: Document what a cached tiffy.bruh resolved file looks like
-						const match = line.match(/^(.*?)\$(.*)\$\$(.*)\$\$\$(.{64})\$\$\$\$(.*)$/)
+						const match = /^(.*?)\|(.*)\|(.*)\|(.{64})\|(.*)/.exec(line)
 						if (!match) {
 							log.error('Fatal Error: %s', ''.bold('Invalid cache file encountered'))
 							log.error('We should never be here, exiting to prevent further issues.')
@@ -46,21 +43,25 @@ export class Tree {
 						}
 
 						const [_match, name, version, revision, blob, deps] = match
-						packages = packages.filter(keep => keep !== pkg)
+						packages = packages.filter(keep => keep !== package_)
 						resolved.push({
-							name: name,
-							version: version,
-							revision: parseInt(revision),
-							blob: blob,
-							dependencies: deps.split(',').filter(Boolean)
+							name,
+							version,
+							revision: Number.parseInt(revision),
+							blob,
+							dependencies: deps.split(',')
+								.filter(Boolean)
 						})
 					}
 				})
 
+				stream.on('data', data => data.toString()
+					.replace('$', '\n'))
+
 				reader.on('close', () => {
 					resolve({
 						unresolved: packages,
-						resolved: resolved
+						resolved
 					})
 				})
 
@@ -72,6 +73,9 @@ export class Tree {
 		return { resolved, unresolved: packages }
 	}
 
+	formula: BruhFormula
+	childTrees: Tree[] = []
+
 	private constructor(formula: BruhFormula) {
 		this.formula = formula
 	}
@@ -80,7 +84,8 @@ export class Tree {
 		const { resolved, unresolved } = await Tree.resolve(this.formula.dependencies)
 
 		if (unresolved.length > 0) {
-			const text = unresolved.map(value => ''.bold(value)).join(' ')
+			const text = unresolved.map(value => ''.bold(value))
+				.join(' ')
 			log.warning('Unable to resolve the following packages: %s', text)
 			log.error('Try running %s to resolve this.', ''.bold(`${argv0} update`))
 			return

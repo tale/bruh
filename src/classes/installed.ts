@@ -5,8 +5,8 @@ import { BruhFormula } from 'types'
 import { config } from 'utils'
 
 export class InstalledPackage {
-	private formula: BruhFormula
-	private files: string[] = []
+	private readonly formula: BruhFormula
+	private readonly files: string[] = []
 
 	static async exists(formula: BruhFormula) {
 		try {
@@ -21,7 +21,8 @@ export class InstalledPackage {
 	static async delete(formula: BruhFormula) {
 		const path = join(config.paths.installed, `${formula.name}#${formula.version}#${formula.revision}.bruh`)
 		const data = await readFile(path, 'utf8')
-		const lines = data.trim().split('\n')
+		const lines = data.trim()
+			.split('\n')
 
 		const definition = lines.shift()
 		if (definition !== `##BRUHFILE_DEFINITION## ${JSON.stringify(formula)}`) {
@@ -52,7 +53,7 @@ export class InstalledPackage {
 
 		stream.write(`##BRUHFILE_DEFINITION## ${JSON.stringify(this.formula)}\n`)
 		for (const path of this.files) {
-			stream.write(path.concat('\n'))
+			stream.write([...path, '\n'])
 		}
 
 		await new Promise((resolve, reject) => {
