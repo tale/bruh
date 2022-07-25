@@ -31,6 +31,10 @@ export const log = {
 		console.log(`${prefix} ${format}`, ...arguments_)
 	},
 
+	blank: () => {
+		console.log('')
+	},
+
 	special: {
 		update: (source: string) => {
 			const prefix = ''.dim('[')
