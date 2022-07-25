@@ -1,11 +1,11 @@
 import { commands } from 'commands'
 import { log } from 'interface'
 import { exit } from 'node:process'
-import { endMetric, preflight, startMetric } from 'utils'
+import { perf, preflight } from 'utils'
 
 // CommonJS doesn't allow top level await :(
 const execute = async () => {
-	startMetric('argument-parse')
+	perf.start('argument-parse')
 
 	const arguments_ = process.argv.slice(2) // The first two args can always be ignored
 	const directive = arguments_.shift()
@@ -26,10 +26,10 @@ const execute = async () => {
 		return [flag.name, false]
 	}))
 
-	endMetric('argument-parse')
+	perf.end('argument-parse')
 	await preflight()
 
-	startMetric('command-execute')
+	perf.start('command-execute')
 	log.debug('flags: %s', flags)
 	log.debug('args: %s', arguments_)
 
@@ -44,7 +44,8 @@ const execute = async () => {
 			console.log(error)
 		}
 	} finally {
-		endMetric('command-execute')
+		perf.end('command-execute')
+		perf.dump()
 		exit(exitCode)
 	}
 }
