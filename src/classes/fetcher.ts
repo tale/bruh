@@ -41,7 +41,7 @@ class GHCR {
 
 class API {
 	private readonly prefix = (function () {
-		const prefix = [...arch, '_'].replace('x64_', '') // Only arm64 is prefixed
+		const prefix = arch.replace('x64_', '') // Only arm64 is prefixed
 		const version = Number.parseInt(release()
 			.split('.')[0]) // Major XNU Version only
 
