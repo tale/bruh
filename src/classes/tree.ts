@@ -1,11 +1,7 @@
+import { fs_cache_parser } from 'fs_parser'
 import { log } from 'interface'
-import { createReadStream } from 'node:fs'
-import { readdir } from 'node:fs/promises'
-import { join } from 'node:path'
 import { argv0 } from 'node:process'
-import { createInterface } from 'node:readline'
 import { BruhFormula } from 'types'
-import { config } from 'utils'
 
 type Dependencies = {
 	resolved: BruhFormula[];
@@ -21,56 +17,31 @@ export class Tree {
 
 	static async resolve(packages: string[]) {
 		const resolved = new Array<BruhFormula>()
+		const { streamer, decompressor, reader } = fs_cache_parser.database_stream()
 
-		const files = await readdir(config.paths.tiffy)
-		const tasks = files.map(async file => {
-			const stream = createReadStream(join(config.paths.tiffy, file))
-			const reader = createInterface(stream)
-
-			return new Promise<Dependencies>((resolve, reject) => {
-				reader.on('line', async line => {
-					for (const package_ of packages) {
-						if (!line.startsWith(package_)) { // All caches start with the package name
-							continue
-						}
-
-						// TODO: Document what a cached tiffy.bruh resolved file looks like
-						const match = /^(.*?)\|(.*)\|(.*)\|(.{64})\|(.*)/.exec(line)
-						if (!match) {
-							log.error('Fatal Error: %s', ''.bold('Invalid cache file encountered'))
-							log.error('We should never be here, exiting to prevent further issues.')
-							return
-						}
-
-						const [_match, name, version, revision, blob, deps] = match
-						packages = packages.filter(keep => keep !== package_)
-						resolved.push({
-							name,
-							version,
-							revision: Number.parseInt(revision),
-							blob,
-							dependencies: deps.split(',')
-								.filter(Boolean)
-						})
+		return new Promise<Dependencies>((resolve, reject) => {
+			streamer.on('line', async (line: string) => {
+				for (const package_ of packages) {
+					// All caches start with the package name
+					if (!line.startsWith(package_)) {
+						continue
 					}
-				})
 
-				stream.on('data', data => data.toString()
-					.replace('$', '\n'))
+					const formula = fs_cache_parser.deserialize(line)
 
-				reader.on('close', () => {
-					resolve({
-						unresolved: packages,
-						resolved
-					})
-				})
+					if (packages.includes(formula.name)) {
+						packages = packages.filter(keep => keep !== formula.name)
+						resolved.push(formula)
+					}
+				}
 
-				reader.on('SIGINT', reject)
-			})
+			}).on('close', () => {
+				resolve({ resolved, unresolved: packages })
+			}).on('SIGINT', () => reject())
+
+			decompressor.on('error', () => reject())
+			reader.on('error', () => reject())
 		})
-
-		await Promise.allSettled(tasks)
-		return { resolved, unresolved: packages }
 	}
 
 	formula: BruhFormula
@@ -84,11 +55,14 @@ export class Tree {
 		const { resolved, unresolved } = await Tree.resolve(this.formula.dependencies)
 
 		if (unresolved.length > 0) {
-			const text = unresolved.map(value => ''.bold(value))
-				.join(' ')
-			log.warning('Unable to resolve the following packages: %s', text)
-			log.error('Try running %s to resolve this.', ''.bold(`${argv0} update`))
-			return
+			// const text = unresolved.map(value => ''.bold(value))
+			// 	.join(' ')
+			// log.warning('Unable to resolve the following packages: %s', text)
+			// log.error('Try running %s to resolve this.', ''.bold(`${argv0} update`))
+			throw {
+				name: this.formula.name,
+				unresolved: unresolved
+			}
 		}
 
 		for (const dependency of resolved) {

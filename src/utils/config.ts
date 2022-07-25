@@ -7,7 +7,7 @@ export const config = {
 	debug: Boolean(process.env.DEBUG),
 	paths: {
 		prefix,
-		tiffy: join(prefix, 'tiffy.d'),
+		tiffy: join(prefix, 'tiffy.db'),
 		cache: join(prefix, 'cache.d'),
 		installed: join(prefix, 'install.d')
 	}

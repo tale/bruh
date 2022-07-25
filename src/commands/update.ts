@@ -1,8 +1,7 @@
 import { Command, Fetcher } from 'classes'
+import { fs_cache_parser } from 'fs_parser'
 import { log } from 'interface'
-import { createWriteStream } from 'node:fs'
-import { mkdir, rm } from 'node:fs/promises'
-import { join } from 'node:path'
+import { rm } from 'node:fs/promises'
 import { BruhFormula } from 'types'
 import { config } from 'utils'
 
@@ -28,20 +27,15 @@ export default new Command<Flags>({
 		await rm(config.paths.tiffy, { recursive: true })
 	}
 
-	await mkdir(config.paths.tiffy, { recursive: true })
-
 	const taps = ['homebrew/core'] // TODO: Support proper Taps
-	const pkgs = new Set<string>()
-
-	Array.prototype.indexOf()
+	const formulas = new Array<BruhFormula>()
 
 	const tasks = taps.map(async tap => {
 		// Official taps can be handled through the API
 		if (tap.startsWith('homebrew/')) {
 			log.special.update(tap)
-			const data = await Fetcher.API.allFormulae()
-			const cachePath = join(config.paths.tiffy, `${tap.replaceAll('/', '-')}.bruh`)
-			await writeFormulae(data, cachePath)
+			const formulae = await Fetcher.API.allFormulae()
+			formulas.push(...formulae)
 		}
 	})
 
@@ -52,15 +46,7 @@ export default new Command<Flags>({
 			log.error(promise.reason)
 		}
 	})
-})
 
-const writeFormulae = async (formulae: BruhFormula[], path: string) => new Promise((resolve, reject) => {
-	const stream = createWriteStream(path)
-	formulae.map(({ name, version, revision, blob, dependencies }) => {
-		const format = `${name}|${version}|${revision}|${blob}|${dependencies.join(',')}\r`
-		stream.write(format)
-	})
-
-	stream.on('error', reject)
-	stream.on('finish', resolve)
+	const caches = formulas.map(formula => fs_cache_parser.serialize(formula))
+	await fs_cache_parser.flush_database(caches)
 })
