@@ -1,13 +1,14 @@
-import { mkdir } from 'node:fs/promises'
+import { homedir } from 'node:os'
+import { join } from 'node:path'
+
+const prefix = join(homedir(), 'Library', 'Application Support', 'Bruh')
 
 export const config = {
-	debug: process.env.DEBUG ? true : false,
+	debug: Boolean(process.env.DEBUG),
 	paths: {
-		tiffy: '/opt/bruh/tiffy.d',
-		cache: '/opt/bruh/cache.d',
-		installed: '/opt/bruh/install.d'
-	},
-	build: async () => {
-		await mkdir('/opt/bruh')
+		prefix,
+		tiffy: join(prefix, 'tiffy.d'),
+		cache: join(prefix, 'cache.d'),
+		installed: join(prefix, 'install.d')
 	}
 }
