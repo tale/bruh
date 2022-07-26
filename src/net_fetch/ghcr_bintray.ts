@@ -47,7 +47,7 @@ export async function download(formula: BruhFormula) {
 		throw new Error('Missing response body stream')
 	}
 
-	do {
+	while (!is_read) {
 		// eslint-disable-next-line no-await-in-loop
 		const { done, value } = await reader.read()
 
@@ -56,7 +56,7 @@ export async function download(formula: BruhFormula) {
 		} else {
 			writer.write(value)
 		}
-	} while (!is_read)
+	}
 
 	writer.end()
 
