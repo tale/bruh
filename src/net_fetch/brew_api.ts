@@ -7,11 +7,20 @@ export async function fetch_formulas() {
 		['Accept', 'application/json']
 	])
 
-	const result = await fetch(config.web.brew.formulae, {
+	// 5 second timeout using AbortController
+	const abort_controller = new AbortController()
+	const abort_timeout = setTimeout(() => {
+		abort_controller.abort()
+	}, 5 * 1000)
+
+	const result = await fetch(config.web.brew_formulas, {
+		signal: abort_controller.signal,
 		method: 'GET',
 		redirect: 'follow',
 		headers
 	})
+
+	clearTimeout(abort_timeout)
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const data: BrewFormula[] = await result.json()
