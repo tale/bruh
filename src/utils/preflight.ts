@@ -1,8 +1,6 @@
 import { constants } from 'node:fs'
 import { access, mkdir } from 'node:fs/promises'
-import { perf } from 'utils'
-
-import { config } from './config'
+import { config, perf } from 'utils'
 
 export async function preflight() {
 	perf.start('preflight')
@@ -13,7 +11,6 @@ export async function preflight() {
 	} catch {
 		await mkdir(config.paths.prefix, { recursive: true })
 		await mkdir(config.paths.cache)
-		await mkdir(config.paths.installed)
 	}
 
 	perf.end('preflight')

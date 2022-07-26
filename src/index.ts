@@ -1,4 +1,4 @@
-import { commands } from 'commands'
+import { cli_commands } from 'cli_command'
 import { log } from 'interface'
 import { exit } from 'node:process'
 import { perf, preflight } from 'utils'
@@ -12,7 +12,7 @@ const execute = async () => {
 	const directive = runtime_arguments.shift()
 		?.trim() ?? 'help' // Default to help command if no directive is given
 
-	const command = commands.find(v => v.options.name === directive)
+	const command = cli_commands.find(v => v.options.name === directive)
 	if (!command) {
 		log.error('Unknown Command: %s', directive)
 		exit(1)

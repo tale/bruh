@@ -10,8 +10,8 @@ type command_options = {
 	flags: command_flag[];
 }
 
-// Flags is any to support our exported array type
-export class Command<Flags = Record<string, unknown>> {
+// Flags is never to support our exported array type
+export class Command<Flags = never> {
 	private readonly command_options: command_options
 	private readonly exec_op: (flags: Flags, runtime_arguments: string[]) => Promise<void>
 

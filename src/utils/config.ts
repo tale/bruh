@@ -46,8 +46,7 @@ export const config = {
 	},
 	web: {
 		user_agent: 'Bruh/1.0 (+https://tale.me/go/bruh)', // TODO: Automated Version via tsup build time variables
-		brew: {
-			formulae: 'https://formulae.brew.sh/api/formula.json'
-		}
+		gh_bintray: 'https://ghcr.io/v2/homebrew/core',
+		brew_formulas: 'https://formulae.brew.sh/api/formula.json'
 	}
 }

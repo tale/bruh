@@ -17,13 +17,13 @@ export default new Command<Flags>({
 	flags: [
 		{
 			name: 'reinstall',
-			longFlag: '--reinstall',
-			shortFlag: '-r'
+			long_flag: '--reinstall',
+			short_flag: '-r'
 		},
 		{
 			name: 'yes',
-			longFlag: '--yes',
-			shortFlag: '-y'
+			long_flag: '--yes',
+			short_flag: '-y'
 		}
 	]
 }, async (flags, arguments_) => {
@@ -42,7 +42,6 @@ export default new Command<Flags>({
 	}
 
 	await mkdir(config.paths.cache, { recursive: true })
-	await mkdir(config.paths.installed, { recursive: true })
 	const { resolved, unresolved } = await Tree.resolve(arguments_)
 
 	const tasks = resolved.map(async formula => {
@@ -115,7 +114,6 @@ export default new Command<Flags>({
 
 	const dependencies = [...new Set(allViewableDependencies)].sort()
 	if (dependencies.length > 0) {
-
 		log.info('The following additional packages will be installed: %s', ''.dim(dependencies.join(' ')))
 	}
 
@@ -128,5 +126,6 @@ export default new Command<Flags>({
 	}
 
 	// Messy looking deduplication; but it's fast
-	const downloads = downloadRequests.filter((formula, index, array) => array.findIndex(subformula => subformula.name === formula.name) === index)
+	const deduplicatedDownloads = downloadRequests.filter((formula, index, array) => array.findIndex(subformula => subformula.name === formula.name) === index)
+	// Const downloadTasks = deduplicatedDownloads.map(async formula => {})
 })
