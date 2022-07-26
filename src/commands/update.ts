@@ -1,6 +1,7 @@
-import { Command, Fetcher } from 'classes'
-import { fs_cache_parser } from 'fs_parser'
+import { Command } from 'classes'
+import { cache_handler } from 'fs_parser'
 import { log } from 'interface'
+import { brew_api } from 'net_fetch'
 import { rm } from 'node:fs/promises'
 import { BruhFormula } from 'types'
 import { config } from 'utils'
@@ -15,8 +16,8 @@ export default new Command<Flags>({
 	flags: [
 		{
 			name: 'force',
-			longFlag: '--force-update',
-			shortFlag: '-f'
+			long_flag: '--force-update',
+			short_flag: '-f'
 		}
 	]
 }, async (flags, _arguments) => {
@@ -34,8 +35,8 @@ export default new Command<Flags>({
 		// Official taps can be handled through the API
 		if (tap.startsWith('homebrew/')) {
 			log.special.update(tap)
-			const formulae = await Fetcher.API.allFormulae()
-			formulas.push(...formulae)
+			const formulas = await brew_api.fetch_formulas()
+			formulas.push(...formulas)
 		}
 	})
 
@@ -47,6 +48,6 @@ export default new Command<Flags>({
 		}
 	})
 
-	const caches = formulas.map(formula => fs_cache_parser.serialize(formula))
-	await fs_cache_parser.flush_database(caches)
+	const caches = formulas.map(formula => cache_handler.serialize(formula))
+	await cache_handler.flush_database(caches)
 })
