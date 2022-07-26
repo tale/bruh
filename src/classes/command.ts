@@ -1,26 +1,30 @@
-type Flag = {
+type command_flag = {
 	name: string;
-	longFlag: `--${string}`;
-	shortFlag: `-${string}`;
+	long_flag: `--${string}`;
+	short_flag: `-${string}`;
 }
 
-type CommandOptions = {
+type command_options = {
 	name: string;
 	description: string;
-	flags: Flag[];
+	flags: command_flag[];
 }
 
 // Flags is any to support our exported array type
-export class Command<Flags = any> {
-	options: CommandOptions
-	executor: (flags: Flags, arguments_: string[]) => Promise<void>
+export class Command<Flags = Record<string, unknown>> {
+	private readonly command_options: command_options
+	private readonly exec_op: (flags: Flags, runtime_arguments: string[]) => Promise<void>
 
-	constructor(options: CommandOptions, executor: (flags: Flags, arguments_: string[]) => Promise<void>) {
-		this.options = options
-		this.executor = executor
+	constructor(options: command_options, executor: (flags: Flags, runtime_arguments: string[]) => Promise<void>) {
+		this.command_options = options
+		this.exec_op = executor
 	}
 
-	async execute(flags: unknown, arguments_: string[]) {
-		await this.executor(flags as Flags, arguments_)
+	get options() {
+		return this.command_options
+	}
+
+	async run(flags: unknown, runtime_arguments: string[]) {
+		await this.exec_op(flags as Flags, runtime_arguments)
 	}
 }

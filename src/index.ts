@@ -7,9 +7,11 @@ import { perf, preflight } from 'utils'
 const execute = async () => {
 	perf.start('argument-parse')
 
-	const arguments_ = process.argv.slice(2) // The first two args can always be ignored
-	const directive = arguments_.shift()
-		?.trim() ?? 'help'
+	// The first two args can always be ignored
+	const runtime_arguments = process.argv.slice(2)
+	const directive = runtime_arguments.shift()
+		?.trim() ?? 'help' // Default to help command if no directive is given
+
 	const command = commands.find(v => v.options.name === directive)
 	if (!command) {
 		log.error('Unknown Command: %s', directive)
@@ -17,9 +19,9 @@ const execute = async () => {
 	}
 
 	const flags = Object.fromEntries(command.options.flags.map(flag => {
-		if (arguments_.includes(flag.shortFlag) || arguments_.includes(flag.longFlag)) {
-			const index = arguments_.indexOf(flag.shortFlag) ?? arguments_.find(v => v === flag.longFlag)
-			arguments_.splice(index, 1)
+		if (runtime_arguments.includes(flag.short_flag) || runtime_arguments.includes(flag.long_flag)) {
+			const index = runtime_arguments.indexOf(flag.short_flag) ?? runtime_arguments.find(v => v === flag.long_flag)
+			runtime_arguments.splice(index, 1)
 			return [flag.name, true]
 		}
 
@@ -31,13 +33,13 @@ const execute = async () => {
 
 	perf.start('command-execute')
 	log.debug('flags: %s', flags)
-	log.debug('args: %s', arguments_)
+	log.debug('args: %s', runtime_arguments)
 
 	let exitCode = 0
 
 	try {
-		await command.execute(flags, arguments_)
-	} catch (error) {
+		await command.run(flags, runtime_arguments)
+	} catch (error: unknown) {
 		if (typeof error === 'number') {
 			exitCode = error
 		} else {
