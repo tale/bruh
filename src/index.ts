@@ -3,6 +3,9 @@ import { log } from 'interface'
 import { exit } from 'node:process'
 import { perf, preflight } from 'utils'
 
+// This cannot be an ESM style import for some reason
+process.removeAllListeners('warning')
+
 // CommonJS doesn't allow top level await :(
 const execute = async () => {
 	perf.start('argument-parse')
