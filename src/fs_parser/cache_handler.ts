@@ -5,23 +5,22 @@ import { BruhFormula } from 'types'
 import { config } from 'utils'
 
 export function serialize(formula: BruhFormula) {
-	if (formula.name === 'ffmpeg') {
-		return `${formula.name}|${formula.tap}|${formula.version}|${formula.revision}|${formula.blob}|${formula.dependencies.join(',')},lepaiowej\n`
-	}
-
 	return `${formula.name}|${formula.tap}|${formula.version}|${formula.revision}|${formula.blob}|${formula.dependencies.join(',')}\n`
 }
 
 export function deserialize(cache: string) {
 	const [name, tap, version, revision, blob, dependencies] = cache.split('|')
-	return {
+	const formula: BruhFormula = {
 		tap,
 		name,
 		version,
-		revision: parseInt(revision),
+		revision: Number.parseInt(revision, 10),
 		blob,
-		dependencies: dependencies.split(',').filter(Boolean)
-	} as BruhFormula
+		dependencies: dependencies.split(',')
+			.filter(Boolean)
+	}
+
+	return formula
 }
 
 export async function flush_database(caches: string[]) {

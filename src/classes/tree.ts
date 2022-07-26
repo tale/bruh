@@ -1,6 +1,4 @@
-import { fs_cache_parser } from 'fs_parser'
-import { log } from 'interface'
-import { argv0 } from 'node:process'
+import { cache_handler } from 'fs_parser'
 import { BruhFormula } from 'types'
 
 type Dependencies = {
@@ -17,7 +15,7 @@ export class Tree {
 
 	static async resolve(packages: string[]) {
 		const resolved = new Array<BruhFormula>()
-		const { streamer, decompressor, reader } = fs_cache_parser.database_stream()
+		const { streamer, decompressor, reader } = cache_handler.database_stream()
 
 		return new Promise<Dependencies>((resolve, reject) => {
 			streamer.on('line', async (line: string) => {
@@ -27,20 +25,27 @@ export class Tree {
 						continue
 					}
 
-					const formula = fs_cache_parser.deserialize(line)
+					const formula = cache_handler.deserialize(line)
 
 					if (packages.includes(formula.name)) {
 						packages = packages.filter(keep => keep !== formula.name)
 						resolved.push(formula)
 					}
 				}
+			})
+				.on('close', () => {
+					resolve({ resolved, unresolved: packages })
+				})
+				.on('SIGINT', () => {
+					reject()
+				})
 
-			}).on('close', () => {
-				resolve({ resolved, unresolved: packages })
-			}).on('SIGINT', () => reject())
-
-			decompressor.on('error', () => reject())
-			reader.on('error', () => reject())
+			decompressor.on('error', () => {
+				reject()
+			})
+			reader.on('error', () => {
+				reject()
+			})
 		})
 	}
 
@@ -55,13 +60,13 @@ export class Tree {
 		const { resolved, unresolved } = await Tree.resolve(this.formula.dependencies)
 
 		if (unresolved.length > 0) {
-			// const text = unresolved.map(value => ''.bold(value))
+			// Const text = unresolved.map(value => ''.bold(value))
 			// 	.join(' ')
 			// log.warning('Unable to resolve the following packages: %s', text)
 			// log.error('Try running %s to resolve this.', ''.bold(`${argv0} update`))
 			throw {
 				name: this.formula.name,
-				unresolved: unresolved
+				unresolved
 			}
 		}
 
