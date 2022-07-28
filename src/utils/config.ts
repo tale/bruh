@@ -60,6 +60,7 @@ export const config = {
 		prefix,
 		tiffy: join(prefix, 'tiffy.db'),
 		cache: join(prefix, 'cache.d'),
+		link: join(prefix, 'link.d'),
 		install: join(prefix, 'install.db')
 	},
 	web: {
