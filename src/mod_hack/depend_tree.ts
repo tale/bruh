@@ -2,12 +2,12 @@ import { cache_handler } from 'fs_parser'
 import { hack_errors } from 'mod_hack'
 import { bruh_formula } from 'types'
 
-export async function resolve_and_depends(unresolved_arguments: string[]) {
+export async function resolve_flat(unresolved_arguments: string[]) {
 	const { resolved, unresolved } = await cache_handler.resolve_deps(unresolved_arguments)
 
 	const recurse_tasks = resolved.map(async dep => {
 		try {
-			const tree = await recurse_deps(dep)
+			const tree = await recurse_flat(dep)
 			resolved.push(...tree)
 		} catch (error: unknown) {
 			if (error instanceof hack_errors.unresolved_dependency_error) {
@@ -22,7 +22,7 @@ export async function resolve_and_depends(unresolved_arguments: string[]) {
 	return { resolved, unresolved }
 }
 
-async function recurse_deps(formula: bruh_formula) {
+async function recurse_flat(formula: bruh_formula) {
 	const { resolved, unresolved } = await cache_handler.resolve_deps(formula.dependencies)
 
 	if (unresolved.length > 0) {
@@ -30,7 +30,7 @@ async function recurse_deps(formula: bruh_formula) {
 	}
 
 	const recurse_tasks = resolved.map(async dep => {
-		const tree = await recurse_deps(dep)
+		const tree = await recurse_flat(dep)
 		resolved.push(...tree)
 	})
 
