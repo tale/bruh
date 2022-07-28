@@ -4,22 +4,24 @@ import { Transform } from 'node:stream'
 import { bruh_formula } from 'types'
 import { config } from 'utils'
 
-export async function is_installed(formula: bruh_formula) {
+export async function is_installed(formulas: bruh_formula[]) {
 	const reader = createReadStream(config.paths.install)
 	const streamer = createInterface(reader)
+	const formula_map = new WeakMap<bruh_formula, boolean>()
 
-	return new Promise<boolean>((resolve, reject) => {
+	return new Promise<WeakMap<bruh_formula, boolean>>((resolve, reject) => {
 		streamer.on('line', (line: string) => {
-			const package_prefix = `##bruh_start_def## - ${JSON.stringify(formula)}`
+			for (const formula of formulas) {
+				const package_prefix = `##bruh_start_def## - ${JSON.stringify(formula)}`
+				if (!line.startsWith(package_prefix)) {
+					continue
+				}
 
-			if (!line.startsWith(package_prefix)) {
-				return
+				formula_map.set(formula, true)
 			}
-
-			resolve(true)
 		})
 			.on('close', () => {
-				resolve(false)
+				resolve(formula_map)
 			})
 			.on('SIGINT', reject)
 
@@ -27,20 +29,22 @@ export async function is_installed(formula: bruh_formula) {
 	})
 }
 
-export async function flush_formula(formula: bruh_formula, files: string[]) {
+export async function flush_formulas(map: Map<bruh_formula, string[]>) {
 	const writer = createWriteStream(config.paths.install, { flags: 'a' })
 
-	writer.write(`##bruh_start_def## - ${JSON.stringify(formula)}\n`)
+	for (const [formula, files] of map) {
+		writer.write(`##bruh_start_def## - ${JSON.stringify(formula)}\n`)
 
-	for (const [index, path] of files.entries()) {
-		writer.write(`${path}`)
-		if (index < files.length - 1) {
-			writer.write(',')
+		for (const [index, path] of files.entries()) {
+			writer.write(`${path}`)
+			if (index < files.length - 1) {
+				writer.write(',')
+			}
 		}
-	}
 
-	writer.write('\n##bruh_end_def##\n')
-	writer.end()
+		writer.write('\n##bruh_end_def##\n')
+		writer.end()
+	}
 
 	return new Promise<void>((resolve, reject) => {
 		writer.on('error', reject)
@@ -50,7 +54,7 @@ export async function flush_formula(formula: bruh_formula, files: string[]) {
 	})
 }
 
-export async function purge_formula(formula: bruh_formula) {
+export async function purge_formulas(formulas: bruh_formula[]) {
 	const reader = createReadStream(config.paths.install)
 	const writer = createWriteStream(config.paths.install)
 
@@ -73,9 +77,11 @@ export async function purge_formula(formula: bruh_formula) {
 					continue
 				}
 
-				if (line_contents === `##bruh_start_def## - ${JSON.stringify(formula)}\n`) {
-					found_formula = true
-					continue
+				for (const formula of formulas) {
+					if (line_contents === `##bruh_start_def## - ${JSON.stringify(formula)}\n`) {
+						found_formula = true
+						continue
+					}
 				}
 
 				if (line_contents === '##bruh_end_def##\n') {

@@ -52,7 +52,7 @@ export default new Command<Flags>({
 			return
 		}
 
-		if (await install_database.is_installed(formula)) {
+		if (await install_database.is_installed([formula])) {
 			pre_installed.push(formula.name)
 		}
 	})
