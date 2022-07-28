@@ -1,4 +1,4 @@
-export type BrewFormula = {
+export type brew_formula = {
 	name: string;
 	versions: {
 		stable: string;

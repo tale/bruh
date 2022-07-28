@@ -1,10 +1,10 @@
 import { createReadStream, createWriteStream } from 'node:fs'
 import { createInterface } from 'node:readline'
 import { Transform } from 'node:stream'
-import { BruhFormula } from 'types'
+import { bruh_formula } from 'types'
 import { config } from 'utils'
 
-export async function is_installed(formula: BruhFormula) {
+export async function is_installed(formula: bruh_formula) {
 	const reader = createReadStream(config.paths.install)
 	const streamer = createInterface(reader)
 
@@ -27,7 +27,7 @@ export async function is_installed(formula: BruhFormula) {
 	})
 }
 
-export async function flush_formula(formula: BruhFormula, files: string[]) {
+export async function flush_formula(formula: bruh_formula, files: string[]) {
 	const writer = createWriteStream(config.paths.install, { flags: 'a' })
 
 	writer.write(`##bruh_start_def## - ${JSON.stringify(formula)}\n`)
@@ -50,7 +50,7 @@ export async function flush_formula(formula: BruhFormula, files: string[]) {
 	})
 }
 
-export async function purge_formula(formula: BruhFormula) {
+export async function purge_formula(formula: bruh_formula) {
 	const reader = createReadStream(config.paths.install)
 	const writer = createWriteStream(config.paths.install)
 

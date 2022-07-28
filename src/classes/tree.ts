@@ -1,20 +1,20 @@
 import { cache_handler } from 'fs_parser'
-import { BruhFormula } from 'types'
+import { bruh_formula } from 'types'
 
 type Dependencies = {
-	resolved: BruhFormula[];
+	resolved: bruh_formula[];
 	unresolved: string[];
 }
 
 export class Tree {
-	static async from(formula: BruhFormula) {
+	static async from(formula: bruh_formula) {
 		const tree = new Tree(formula)
 		await tree.generate()
 		return tree
 	}
 
 	static async resolve(packages: string[]) {
-		const resolved = new Array<BruhFormula>()
+		const resolved = new Array<bruh_formula>()
 		const { streamer, decompressor, reader } = cache_handler.database_stream()
 
 		return new Promise<Dependencies>((resolve, reject) => {
@@ -49,10 +49,10 @@ export class Tree {
 		})
 	}
 
-	formula: BruhFormula
+	formula: bruh_formula
 	childTrees: Tree[] = []
 
-	private constructor(formula: BruhFormula) {
+	private constructor(formula: bruh_formula) {
 		this.formula = formula
 	}
 
@@ -77,7 +77,7 @@ export class Tree {
 		}
 	}
 
-	flatten(builderArray?: BruhFormula[]) {
+	flatten(builderArray?: bruh_formula[]) {
 		builderArray = builderArray ?? []
 
 		if (this.childTrees.length > 0) {

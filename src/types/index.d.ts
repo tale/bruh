@@ -1,2 +1,2 @@
-export type * from './BrewFormula'
-export type * from './BruhFormula'
+export type * from './brew_formula'
+export type * from './bruh_formula'

@@ -1,16 +1,16 @@
 import { createReadStream, createWriteStream } from 'node:fs'
 import { createInterface } from 'node:readline'
 import { createBrotliCompress, createBrotliDecompress } from 'node:zlib'
-import { BruhFormula } from 'types'
+import { bruh_formula } from 'types'
 import { config } from 'utils'
 
-export function serialize(formula: BruhFormula) {
+export function serialize(formula: bruh_formula) {
 	return `${formula.name}|${formula.tap}|${formula.version}|${formula.revision}|${formula.blob}|${formula.dependencies.join(',')}\n`
 }
 
 export function deserialize(cache: string) {
 	const [name, tap, version, revision, blob, dependencies] = cache.split('|')
-	const formula: BruhFormula = {
+	const formula: bruh_formula = {
 		tap,
 		name,
 		version,

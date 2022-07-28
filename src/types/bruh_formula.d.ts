@@ -1,4 +1,4 @@
-export type BruhFormula = {
+export type bruh_formula = {
 	tap: string;
 	name: string;
 	version: string;

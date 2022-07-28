@@ -1,9 +1,9 @@
-import { Command, InstalledPackage, Tree } from 'classes'
+import { Command, Tree } from 'classes'
 import { log, Prompt } from 'interface'
 import { constants } from 'node:fs'
 import { access, mkdir } from 'node:fs/promises'
 import { argv0 } from 'node:process'
-import { BruhFormula } from 'types'
+import { bruh_formula } from 'types'
 import { config, exit_code } from 'utils'
 
 interface Flags {
@@ -57,7 +57,7 @@ export default new Command<Flags>({
 
 	const currentlyInstalled = new Array<string>()
 	const installCandidates = new Array<string>()
-	const downloadRequests = new Array<BruhFormula>()
+	const downloadRequests = new Array<bruh_formula>()
 	const allViewableDependencies = new Array<string>()
 
 	const results = await Promise.allSettled(tasks)

@@ -3,7 +3,7 @@ import { cache_handler } from 'fs_parser'
 import { log } from 'interface'
 import { brew_api } from 'net_fetch'
 import { rm } from 'node:fs/promises'
-import { BruhFormula } from 'types'
+import { bruh_formula } from 'types'
 import { config } from 'utils'
 
 interface Flags {
@@ -29,14 +29,14 @@ export default new Command<Flags>({
 	}
 
 	const taps = ['homebrew/core'] // TODO: Support proper Taps
-	const formulas = new Array<BruhFormula>()
+	const formulas = new Array<bruh_formula>()
 
 	const tasks = taps.map(async tap => {
 		// Official taps can be handled through the API
 		if (tap.startsWith('homebrew/')) {
 			log.special.update(tap)
-			const formulas = await brew_api.fetch_formulas()
-			formulas.push(...formulas)
+			const core_formulas = await brew_api.fetch_formulas()
+			formulas.push(...core_formulas)
 		}
 	})
 

@@ -1,10 +1,10 @@
 import { createWriteStream } from 'node:fs'
 import { rm } from 'node:fs/promises'
 import { join } from 'node:path'
-import { BruhFormula } from 'types'
+import { bruh_formula } from 'types'
 import { config } from 'utils'
 
-async function download_preflight(formula: BruhFormula) {
+async function download_preflight(formula: bruh_formula) {
 	try {
 		const path = join(config.paths.cache, formula.blob)
 		await rm(path, { force: true })
@@ -13,7 +13,7 @@ async function download_preflight(formula: BruhFormula) {
 	}
 }
 
-export async function download(formula: BruhFormula) {
+export async function download(formula: bruh_formula) {
 	await download_preflight(formula)
 
 	const path = join(config.paths.cache, formula.blob)

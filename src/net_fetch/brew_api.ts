@@ -1,4 +1,4 @@
-import { BrewFormula, BruhFormula } from 'types'
+import { brew_formula, bruh_formula } from 'types'
 import { config } from 'utils'
 
 export async function fetch_formulas() {
@@ -23,7 +23,7 @@ export async function fetch_formulas() {
 	clearTimeout(abort_timeout)
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const data: BrewFormula[] = await result.json()
+	const data: brew_formula[] = await result.json()
 	const compatible_formulas = data
 		.filter(formula => {
 			if (formula.bottle.stable?.files.all) {
@@ -55,7 +55,7 @@ export async function fetch_formulas() {
 				return
 			}
 
-			const bruh_formula: BruhFormula = {
+			const bruh_formula: bruh_formula = {
 				tap: 'homebrew/core',
 				name: formula.name,
 				version: formula.versions.stable,
@@ -69,5 +69,5 @@ export async function fetch_formulas() {
 		})
 		.filter(Boolean)
 
-	return compatible_formulas as BruhFormula[]
+	return compatible_formulas as bruh_formula[]
 }
