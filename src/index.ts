@@ -1,7 +1,7 @@
 import { cli_commands } from 'cli_command'
 import { log } from 'interface'
 import { exit } from 'node:process'
-import { perf, preflight } from 'utils'
+import { config, perf, preflight } from 'utils'
 
 // This cannot be an ESM style import for some reason
 process.removeAllListeners('warning')
@@ -38,20 +38,26 @@ const execute = async () => {
 	log.debug('flags: %s', flags)
 	log.debug('args: %s', runtime_arguments)
 
-	let exitCode = 0
+	let exit_code = 0
 
 	try {
-		await command.run(flags, runtime_arguments)
+		exit_code = await command.run(flags, runtime_arguments) ?? 0
 	} catch (error: unknown) {
-		if (typeof error === 'number') {
-			exitCode = error
+		log.error('An error has occurred while running this command')
+		log.error('Please report this at %s', ''.dim(config.meta.gh))
+
+		if (error instanceof Error) {
+			log.debug('error: %s - %s', error.name, ''.dim(error.message))
+
+			const error_trace = error.stack?.replaceAll(`${error.name}: ${error.message}\n`, '')
+			log.debug('stack: %s', ''.dim(error_trace?.trim() ?? 'No stacktrace available'))
 		} else {
-			console.log(error)
+			log.debug('error: %s', error)
 		}
 	} finally {
 		perf.end('command-execute')
 		perf.dump()
-		exit(exitCode)
+		exit(exit_code)
 	}
 }
 
