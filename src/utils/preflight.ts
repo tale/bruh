@@ -1,4 +1,4 @@
-import { constants } from 'node:fs'
+import { F_OK, R_OK, W_OK } from 'node:constants'
 import { access, mkdir } from 'node:fs/promises'
 import { config, perf } from 'utils'
 
@@ -7,7 +7,7 @@ export async function preflight() {
 
 	try {
 		// eslint-disable-next-line no-bitwise
-		await access(config.paths.prefix, constants.F_OK | constants.R_OK | constants.W_OK)
+		await access(config.paths.prefix, F_OK | R_OK | W_OK)
 	} catch {
 		await mkdir(config.paths.prefix, { recursive: true })
 		await mkdir(config.paths.cache)
