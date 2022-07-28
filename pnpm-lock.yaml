@@ -1,13 +1,16 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@types/js-yaml': ^4.0.5
   '@types/node': ^18.6.1
   '@types/tar-stream': ^2.2.2
   '@typescript-eslint/eslint-plugin': ^5.31.0
   '@typescript-eslint/parser': ^5.31.0
   eslint: ^8.20.0
   eslint-config-tale: ^1.0.12
+  js-yaml: ^4.1.0
   pkg: ^5.8.0
+  simple-git: ^3.10.0
   tar-stream: ^2.2.0
   tsup: ^6.2.0
   typescript: ^4.7.4
@@ -16,13 +19,16 @@ dependencies:
   tar-stream: 2.2.0
 
 devDependencies:
+  '@types/js-yaml': 4.0.5
   '@types/node': 18.6.1
   '@types/tar-stream': 2.2.2
   '@typescript-eslint/eslint-plugin': 5.31.0_d5zwcxr4bwkhmuo464cb3a2puu
   '@typescript-eslint/parser': 5.31.0_he2ccbldppg44uulnyq4rwocfa
   eslint: 8.20.0
   eslint-config-tale: 1.0.12_typescript@4.7.4
+  js-yaml: 4.1.0
   pkg: 5.8.0
+  simple-git: 3.10.0
   tsup: 6.2.0_typescript@4.7.4
   typescript: 4.7.4
 
@@ -136,6 +142,18 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
 
+  /@kwsites/file-exists/1.1.1:
+    resolution: {integrity: sha512-m9/5YGR18lIwxSFDwfE3oA7bWuq9kdau6ugN4H2rJeyhFQZcG9AgSHkQtSD15a8WvTgfz9aikZMrKPHvbpqFiw==}
+    dependencies:
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /@kwsites/promise-deferred/1.1.1:
+    resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
+    dev: true
+
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -155,6 +173,10 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.13.0
+    dev: true
+
+  /@types/js-yaml/4.0.5:
+    resolution: {integrity: sha512-FhpRzf927MNQdRZP0J5DLIdTXhjLYzeUTmLAu69mnVksLH9CJY3IuSeEgbKUki7GQZm0WqDkGzyxju2EZGD2wA==}
     dev: true
 
   /@types/json-schema/7.0.11:
@@ -2398,6 +2420,16 @@ packages:
       decompress-response: 4.2.1
       once: 1.4.0
       simple-concat: 1.0.1
+    dev: true
+
+  /simple-git/3.10.0:
+    resolution: {integrity: sha512-2w35xrS5rVtAW0g67LqtxCZN5cdddz/woQRfS0OJXaljXEoTychZ4jnE+CQgra/wX4ZvHeiChTUMenCwfIYEYw==}
+    dependencies:
+      '@kwsites/file-exists': 1.1.1
+      '@kwsites/promise-deferred': 1.1.1
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /slash/3.0.0:

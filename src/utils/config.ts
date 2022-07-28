@@ -3,6 +3,23 @@ import { homedir, release } from 'node:os'
 import { join } from 'node:path'
 import { arch, argv0 } from 'node:process'
 
+// Load our build time globals
+declare global {
+	const build_constants: {
+		commit_hash: string;
+		version: string;
+		build_time: string;
+		bin_identity: string;
+		authority: string;
+		config: {
+			author_name: string;
+			github_url: string;
+			support_email: string;
+			user_agent: string;
+		};
+	}
+}
+
 const prefix = join(homedir(), 'Library', 'Application Support', 'Bruh')
 
 function calculate_release_name() {
@@ -46,11 +63,18 @@ export const config = {
 		install: join(prefix, 'install.db')
 	},
 	web: {
-		user_agent: 'Bruh/1.0 (+https://tale.me/go/bruh)', // TODO: Automated Version via tsup build time variables
+		user_agent: build_constants.config.user_agent,
 		gh_bintray: 'https://ghcr.io/v2/homebrew/core',
 		brew_formulas: 'https://formulae.brew.sh/api/formula.json'
 	},
 	meta: {
-		gh: 'https://github.com/tale/bruh'
+		gh: build_constants.config.github_url,
+		author: build_constants.config.author_name,
+		email: build_constants.config.support_email,
+		version: build_constants.version,
+		build_time: build_constants.build_time,
+		commit_hash: build_constants.commit_hash,
+		bin_identity: build_constants.bin_identity,
+		authority: build_constants.authority
 	}
 }
