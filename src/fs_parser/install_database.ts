@@ -13,11 +13,12 @@ export async function is_installed(formulas: bruh_formula[]) {
 		streamer.on('line', (line: string) => {
 			for (const formula of formulas) {
 				const package_prefix = `##bruh_start_def## - ${JSON.stringify(formula)}`
-				if (!line.startsWith(package_prefix)) {
-					continue
+				if (line.startsWith(package_prefix)) {
+					formula_map.set(formula, true)
+					break
 				}
 
-				formula_map.set(formula, true)
+				formula_map.set(formula, false)
 			}
 		})
 			.on('close', () => {
