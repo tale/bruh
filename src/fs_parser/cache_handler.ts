@@ -8,21 +8,6 @@ export function serialize(formula: bruh_formula) {
 	return `${formula.name}|${formula.tap}|${formula.version}|${formula.revision}|${formula.blob}|${formula.dependencies.join(',')}\n`
 }
 
-export function deserialize(cache: string) {
-	const [name, tap, version, revision, blob, dependencies] = cache.split('|')
-	const formula: bruh_formula = {
-		tap,
-		name,
-		version,
-		revision: Number.parseInt(revision, 10),
-		blob,
-		dependencies: dependencies.split(',')
-			.filter(Boolean)
-	}
-
-	return formula
-}
-
 export async function flush_database(caches: string[]) {
 	const compress = createBrotliCompress()
 	const write = createWriteStream(config.paths.tiffy)
@@ -41,11 +26,51 @@ export async function flush_database(caches: string[]) {
 	})
 }
 
-export function database_stream() {
+type deps = {
+	resolved: bruh_formula[];
+	unresolved: string[];
+}
+
+export async function resolve_deps(deps: string[]) {
 	const decompressor = createBrotliDecompress()
 	const reader = createReadStream(config.paths.tiffy)
 	const streamer = createInterface(decompressor)
 
+	const resolved_deps = new Array<bruh_formula>()
 	reader.pipe(decompressor)
-	return { streamer, decompressor, reader }
+
+	return new Promise<deps>((resolve, reject) => {
+		streamer.on('line', (line: string) => {
+			for (const dep of deps) {
+				// All caches start with the package name
+				if (!line.startsWith(dep)) {
+					continue
+				}
+
+				// This code deserializes the cache line and gets the dependency as an object
+				const [name, tap, version, revision, blob, dependencies] = line.split('|')
+				const formula: bruh_formula = {
+					tap,
+					name,
+					version,
+					revision: Number.parseInt(revision, 10),
+					blob,
+					dependencies: dependencies.split(',')
+						.filter(Boolean)
+				}
+
+				if (deps.includes(formula.name)) {
+					deps = deps.filter(to_keep => to_keep !== formula.name)
+					resolved_deps.push(formula)
+				}
+			}
+		})
+			.on('close', () => {
+				resolve({ resolved: resolved_deps, unresolved: deps })
+			})
+			.on('SIGINT', reject)
+
+		decompressor.on('error', reject)
+		reader.on('error', reject)
+	})
 }
