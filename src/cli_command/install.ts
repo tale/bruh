@@ -1,4 +1,4 @@
-import { Command } from 'classes'
+import { build_command } from 'factory_builders'
 import { install_database } from 'fs_parser'
 import { log, Prompt } from 'interface'
 import { depend_tree } from 'mod_hack'
@@ -6,12 +6,10 @@ import { constants } from 'node:fs'
 import { access, mkdir } from 'node:fs/promises'
 import { config, exit_code } from 'utils'
 
-interface Flags {
+export default build_command<{
 	reinstall: boolean;
 	yes: boolean;
-}
-
-export default new Command<Flags>({
+}>({
 	name: 'install',
 	description: 'Install a formula or cask from brew',
 	flags: [

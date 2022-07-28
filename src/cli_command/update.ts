@@ -1,4 +1,4 @@
-import { Command } from 'classes'
+import { build_command } from 'factory_builders'
 import { cache_handler } from 'fs_parser'
 import { log } from 'interface'
 import { brew_api } from 'net_fetch'
@@ -6,11 +6,9 @@ import { rm } from 'node:fs/promises'
 import { bruh_formula } from 'types'
 import { config, exit_code } from 'utils'
 
-interface Flags {
+export default build_command<{
 	force: boolean;
-}
-
-export default new Command<Flags>({
+}>({
 	name: 'update',
 	description: 'Update the list of available formula or casks',
 	flags: [
