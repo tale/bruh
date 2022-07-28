@@ -4,7 +4,7 @@ import { log } from 'interface'
 import { brew_api } from 'net_fetch'
 import { rm } from 'node:fs/promises'
 import { bruh_formula } from 'types'
-import { config } from 'utils'
+import { config, exit_code } from 'utils'
 
 interface Flags {
 	force: boolean;
@@ -20,7 +20,7 @@ export default new Command<Flags>({
 			short_flag: '-f'
 		}
 	]
-}, async (flags, _arguments) => {
+}, async flags => { // We don't need cli_arguments here
 	log.warning('Homebrew Casks and Taps are unsupported')
 
 	if (flags.force) {
@@ -40,14 +40,9 @@ export default new Command<Flags>({
 		}
 	})
 
-	const results = await Promise.allSettled(tasks)
-	results.map(promise => {
-		if (promise.status === 'rejected') {
-			console.log(promise)
-			log.error(promise.reason)
-		}
-	})
-
+	await Promise.all(tasks)
 	const caches = formulas.map(formula => cache_handler.serialize(formula))
 	await cache_handler.flush_database(caches)
+
+	return exit_code.success
 })
