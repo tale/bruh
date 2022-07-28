@@ -1,34 +1,35 @@
+import { bruh_formula } from 'types'
 import { config } from 'utils'
 
 export const log = {
-	debug: (format: string, ...arguments_: unknown[]) => {
+	debug: (format: string, ...log_arguments: unknown[]) => {
 		if (config.debug) {
 			const prefix = ''.dim('[')
 				.magenta('%')
 				.dim(']')
-			console.log(`${prefix} ${format}`, ...arguments_)
+			console.log(`${prefix} ${format}`, ...log_arguments)
 		}
 	},
 
-	info: (format: string, ...arguments_: unknown[]) => {
+	info: (format: string, ...log_arguments: unknown[]) => {
 		const prefix = ''.dim('[')
 			.blue('i')
 			.dim(']')
-		console.log(`${prefix} ${format}`, ...arguments_)
+		console.log(`${prefix} ${format}`, ...log_arguments)
 	},
 
-	error: (format: string, ...arguments_: unknown[]) => {
+	error: (format: string, ...log_arguments: unknown[]) => {
 		const prefix = ''.dim('[')
 			.red('x')
 			.dim(']')
-		console.log(`${prefix} ${format}`, ...arguments_)
+		console.log(`${prefix} ${format}`, ...log_arguments)
 	},
 
-	warning: (format: string, ...arguments_: unknown[]) => {
+	warning: (format: string, ...log_arguments: unknown[]) => {
 		const prefix = ''.dim('[')
 			.yellow('!')
 			.dim(']')
-		console.log(`${prefix} ${format}`, ...arguments_)
+		console.log(`${prefix} ${format}`, ...log_arguments)
 	},
 
 	blank: () => {
@@ -41,6 +42,15 @@ export const log = {
 				.green('>')
 				.dim(']')
 			console.log(`${prefix} Updating %s`, source)
+		},
+		download: (formula: bruh_formula, count_to: number, formula_count: number) => {
+			const prefix = ''.dim('[')
+				.green('>')
+				.dim(']')
+
+			const count = ''.dim(`${count_to}/${formula_count}`)
+
+			console.log(`${prefix} ${count} Linking %s %s %s`, ''.bold(formula.name), ''.cyan(formula.version), ''.dim(formula.blob))
 		}
 	}
 }
