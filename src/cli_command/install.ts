@@ -1,9 +1,11 @@
 import { build_command } from 'factory_builders'
-import { install_database } from 'fs_parser'
-import { log, Prompt } from 'interface'
+import { bin_tool, install_database } from 'fs_parser'
+import { download_tracker, log, Prompt } from 'interface'
 import { depend_tree } from 'mod_hack'
+import { ghcr_bintray } from 'net_fetch'
 import { constants } from 'node:fs'
 import { access, mkdir } from 'node:fs/promises'
+import { bruh_formula } from 'types'
 import { config, exit_code } from 'utils'
 
 export default build_command<{
@@ -44,18 +46,18 @@ export default build_command<{
 
 	// Check for preinstalled formulas
 	const pre_installed = new Array<string>()
-	const install_checks = resolved.map(async formula => {
+	const install_database_checks = await install_database.is_installed(resolved)
+
+	for (const formula of resolved) {
 		// Don't run expensive calculations if we already allow reinstalling
 		if (flags.reinstall) {
-			return
+			continue
 		}
 
-		if (await install_database.is_installed([formula])) {
+		if (install_database_checks.has(formula) && install_database_checks.get(formula)) {
 			pre_installed.push(formula.name)
 		}
-	})
-
-	await Promise.all(install_checks)
+	}
 
 	// Calculate the pending top level formulas to install
 	const top_level_installs = new Set(resolved.filter(to_keep => {
@@ -129,5 +131,18 @@ export default build_command<{
 	}
 
 	// Set automatically deduplicates anything that may still be on both
-	const download_list = new Set([...top_level_installs, ...dependency_installs])
+	const download_list = [...top_level_installs, ...dependency_installs]
+	const download_iterate = download_tracker.build_iterator(download_list.length)
+
+	const install_paths = new Map<bruh_formula, string[]>()
+	const install_tasks = download_list.map(async formula => {
+		await ghcr_bintray.download(formula)
+		await bin_tool.unpack(formula)
+		const paths = await bin_tool.link(formula)
+		install_paths.set(formula, paths)
+		download_iterate(formula)
+	})
+
+	await Promise.all(install_tasks)
+	await install_database.flush_formulas(install_paths)
 })
