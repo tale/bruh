@@ -1,7 +1,7 @@
 import { log } from 'interface'
 import { homedir, release } from 'node:os'
 import { join } from 'node:path'
-import { arch } from 'node:process'
+import { arch, argv0 } from 'node:process'
 
 const prefix = join(homedir(), 'Library', 'Application Support', 'Bruh')
 
@@ -37,6 +37,7 @@ function calculate_release_name() {
 
 export const config = {
 	debug: Boolean(process.env.DEBUG),
+	bin_entry: argv0,
 	xnu_codenames: calculate_release_name(),
 	paths: {
 		prefix,
@@ -48,5 +49,8 @@ export const config = {
 		user_agent: 'Bruh/1.0 (+https://tale.me/go/bruh)', // TODO: Automated Version via tsup build time variables
 		gh_bintray: 'https://ghcr.io/v2/homebrew/core',
 		brew_formulas: 'https://formulae.brew.sh/api/formula.json'
+	},
+	meta: {
+		gh: 'https://github.com/tale/bruh'
 	}
 }
