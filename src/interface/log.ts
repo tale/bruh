@@ -43,6 +43,15 @@ export const log = {
 				.dim(']')
 			console.log(`${prefix} Updating %s`, source)
 		},
+		link: (formula: bruh_formula, count_to: number, formula_count: number) => {
+			const prefix = ''.dim('[')
+				.green('>')
+				.dim(']')
+
+			const count = ''.dim(`${count_to}/${formula_count}`)
+
+			console.log(`${prefix} ${count} Linking %s %s`, ''.bold(formula.name), ''.cyan(formula.version))
+		},
 		download: (formula: bruh_formula, count_to: number, formula_count: number) => {
 			const prefix = ''.dim('[')
 				.green('>')
@@ -50,7 +59,7 @@ export const log = {
 
 			const count = ''.dim(`${count_to}/${formula_count}`)
 
-			console.log(`${prefix} ${count} Linking %s %s %s`, ''.bold(formula.name), ''.cyan(formula.version), ''.dim(formula.blob))
+			console.log(`${prefix} ${count} Downloading %s %s %s`, ''.bold(formula.name), ''.cyan(formula.version), ''.dim(formula.blob))
 		}
 	}
 }

@@ -4,16 +4,17 @@ import { createBrotliCompress, createBrotliDecompress } from 'node:zlib'
 import { bruh_formula } from 'types'
 import { config } from 'utils'
 
-export function serialize(formula: bruh_formula) {
-	return `${formula.name}|${formula.tap}|${formula.version}|${formula.revision}|${formula.blob}|${formula.dependencies.join(',')}\n`
+function serialize(formula: bruh_formula) {
+	return `${formula.name}|${formula.version}|${formula.revision}|${formula.blob}|${formula.dependencies.join(',')}\n`
 }
 
-export async function flush_database(caches: string[]) {
+export async function flush_database(formulas: bruh_formula[]) {
 	const compress = createBrotliCompress()
 	const write = createWriteStream(config.paths.tiffy)
-
 	compress.pipe(write)
-	for (const cache of caches) {
+
+	for (const formula of formulas) {
+		const cache = serialize(formula)
 		compress.write(cache)
 	}
 
@@ -48,9 +49,8 @@ export async function resolve_deps(deps: string[]) {
 				}
 
 				// This code deserializes the cache line and gets the dependency as an object
-				const [name, tap, version, revision, blob, dependencies] = line.split('|')
+				const [name, version, revision, blob, dependencies] = line.split('|')
 				const formula: bruh_formula = {
-					tap,
 					name,
 					version,
 					revision: Number.parseInt(revision, 10),

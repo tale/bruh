@@ -113,8 +113,21 @@ export default build_command<{
 
 	log.blank()
 
-	const printable_top_level_installs = [...top_level_installs].map(formula => formula.name)
-	const printable_dependency_installs = [...dependency_installs].map(formula => formula.name)
+	// Fast but hacky deduplication sequence
+	const formula_filter_predicate = ((formula: bruh_formula, index: number, array: bruh_formula[]) =>
+		// Removes duplicates from the array based on the formula name
+		array.findIndex(subformula => subformula.name === formula.name) === index
+	)
+
+	const printable_top_level_installs = [...top_level_installs]
+		.filter((formula, index, array) => formula_filter_predicate(formula, index, array))
+		.map(formula => formula.name)
+		.sort()
+
+	const printable_dependency_installs = [...dependency_installs]
+		.filter((formula, index, array) => formula_filter_predicate(formula, index, array))
+		.map(formula => formula.name)
+		.sort()
 
 	log.info('The following new packages will be installed: %s', ''.bold(printable_top_level_installs.join(', ')))
 
@@ -130,19 +143,27 @@ export default build_command<{
 		}
 	}
 
-	// Set automatically deduplicates anything that may still be on both
 	const download_list = [...top_level_installs, ...dependency_installs]
-	const download_iterate = download_tracker.build_iterator(download_list.length)
+		.filter((formula, index, array) => formula_filter_predicate(formula, index, array))
+		.sort((a, b) => a.name.localeCompare(b.name))
+
+	const download_iterate = download_tracker.build_iterator(download_list.length, 'download')
+	const link_iterate = download_tracker.build_iterator(download_list.length, 'link')
 
 	const install_paths = new Map<bruh_formula, string[]>()
 	const install_tasks = download_list.map(async formula => {
 		await ghcr_bintray.download(formula)
-		await bin_tool.unpack(formula)
-		const paths = await bin_tool.link(formula)
-		install_paths.set(formula, paths)
 		download_iterate(formula)
 	})
 
 	await Promise.all(install_tasks)
+
+	for await (const formula of download_list) {
+		await bin_tool.unpack(formula)
+		const paths = await bin_tool.link(formula)
+		install_paths.set(formula, paths)
+		link_iterate(formula)
+	}
+
 	await install_database.flush_formulas(install_paths)
 })

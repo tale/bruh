@@ -56,7 +56,6 @@ export async function fetch_formulas() {
 			}
 
 			const bruh_formula: bruh_formula = {
-				tap: 'homebrew/core',
 				name: formula.name,
 				version: formula.versions.stable,
 				revision: Number.parseInt(formula.revision, 10),

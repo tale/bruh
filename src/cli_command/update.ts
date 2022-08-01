@@ -39,8 +39,7 @@ export default build_command<{
 	})
 
 	await Promise.all(tasks)
-	const caches = formulas.map(formula => cache_handler.serialize(formula))
-	await cache_handler.flush_database(caches)
+	await cache_handler.flush_database(formulas)
 
 	return exit_code.success
 })

@@ -1,10 +1,13 @@
 import { createReadStream, createWriteStream } from 'node:fs'
+import { writeFile } from 'node:fs/promises'
 import { createInterface } from 'node:readline'
 import { Transform } from 'node:stream'
 import { bruh_formula } from 'types'
 import { config } from 'utils'
 
 export async function is_installed(formulas: bruh_formula[]) {
+	await writeFile(config.paths.install, '')
+
 	const reader = createReadStream(config.paths.install)
 	const streamer = createInterface(reader)
 	const formula_map = new WeakMap<bruh_formula, boolean>()
@@ -44,9 +47,9 @@ export async function flush_formulas(map: Map<bruh_formula, string[]>) {
 		}
 
 		writer.write('\n##bruh_end_def##\n')
-		writer.end()
 	}
 
+	writer.end()
 	return new Promise<void>((resolve, reject) => {
 		writer.on('error', reject)
 		writer.on('finish', () => {
