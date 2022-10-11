@@ -42,19 +42,23 @@ const esbuild_replacement = {
 	})
 }
 
-export default defineConfig({
-	esbuildOptions(options) {
-		options.define = esbuild_replacement
-	},
-	banner: {
-		js: header
-	},
-	entry: ['./src/index.ts'],
-	format: ['cjs'],
-	target: 'node16',
-	splitting: false,
-	platform: 'node',
-	sourcemap: 'inline',
-	minify: true,
-	clean: true
+export default defineConfig(options => {
+	return {
+		esbuildOptions(options) {
+			options.define = esbuild_replacement
+		},
+		banner: {
+			js: header
+		},
+		entry: {
+			bruh: './src/index.ts',
+		},
+		format: ['cjs'],
+		target: 'node16',
+		splitting: false,
+		platform: 'node',
+		sourcemap: 'inline',
+		minify: !options.watch,
+		clean: true
+	}
 })
