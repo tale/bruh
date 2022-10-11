@@ -85,6 +85,7 @@ async function recurse_link(file: string, path: string, formula: bruh_formula) {
 		// await symlink(fromPath, toPath)
 		// await MachO.rewritePaths(toPath, formula)
 
+		// await mach_o.extract_mach_o(from_path)
 		paths.push(from_path) // TODO: Make this to_path
 	})
 
