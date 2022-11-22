@@ -53,6 +53,7 @@ function get_release_info() {
 		.split('.')[0], 10)
 
 	const xnu_codenames = new Map<number, string>([
+		[22, `${arch_prefix}ventura`],
 		[21, `${arch_prefix}monterey`],
 		[20, `${arch_prefix}big_sur`]
 	])
