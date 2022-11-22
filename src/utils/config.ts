@@ -1,7 +1,10 @@
 import { log } from 'interface'
+import { accessSync, constants, readFileSync } from 'node:fs'
 import { homedir, release } from 'node:os'
 import { join } from 'node:path'
 import { arch, argv0 } from 'node:process'
+import { parse } from 'plist'
+import { system_plist } from 'types'
 
 // Load our build time globals
 declare global {
@@ -22,7 +25,28 @@ declare global {
 
 const prefix = join(homedir(), 'Library', 'Application Support', 'Bruh')
 
-function calculate_release_name() {
+function get_macos_meta() {
+	try {
+		// This file always exists on the system at the current version of macOS
+		accessSync('/System/Library/CoreServices/SystemVersion.plist', constants.R_OK)
+		const xml = readFileSync('/System/Library/CoreServices/SystemVersion.plist', 'utf8')
+
+		const parsed = parse(xml) as system_plist
+		return {
+			name: parsed.ProductName,
+			version: parsed.ProductUserVisibleVersion,
+			copyright: parsed.ProductCopyright
+		}
+	} catch {
+		return {
+			name: 'Unknown',
+			version: '-1.0.0',
+			copyright: 'Apple Inc.'
+		}
+	}
+}
+
+function get_release_info() {
 	// Non arm machines don't have architecture prefixes
 	const arch_prefix = `${arch}_`.replace('x64_', '')
 	let xnu_major_version = Number.parseInt(release()
@@ -44,18 +68,25 @@ function calculate_release_name() {
 		xnu_major_version--
 	}
 
+	const macos_meta = get_macos_meta()
 	if (supported_codenames.size === 0) {
-		log.error('Your version of macOS is not supported.')
-		log.error('XNU version: %s', release())
+		log.warning('%s %s is currently not supported by %s', macos_meta.name, macos_meta.version, ''.bold('bruh'))
+		log.warning(''.dim('Please open an issue on GitHub if you encounter errors'))
+		log.warning(''.dim(build_constants.config.github_url))
 	}
 
-	return supported_codenames
+	return {
+		supported_codenames,
+		macos_meta
+	}
 }
 
+const info = get_release_info()
 export const config = {
 	debug: Boolean(process.env.DEBUG),
 	bin_entry: argv0,
-	xnu_codenames: calculate_release_name(),
+	xnu_codenames: info.supported_codenames,
+	macos_meta: info.macos_meta,
 	paths: {
 		prefix,
 		tiffy: join(prefix, 'tiffy.db'),

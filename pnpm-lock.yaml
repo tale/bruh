@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@types/js-yaml': ^4.0.5
   '@types/node': ^18.7.14
+  '@types/plist': ^3.0.2
   '@types/tar-fs': ^2.0.1
   '@typescript-eslint/eslint-plugin': ^5.36.1
   '@typescript-eslint/parser': ^5.36.1
@@ -10,17 +11,20 @@ specifiers:
   eslint-config-tale: ^1.0.13
   js-yaml: ^4.1.0
   pkg: ^5.8.0
+  plist: ^3.0.6
   simple-git: ^3.13.0
   tar-fs: ^2.1.1
   tsup: ^6.2.3
   typescript: ^4.8.2
 
 dependencies:
+  plist: 3.0.6
   tar-fs: 2.1.1
 
 devDependencies:
   '@types/js-yaml': 4.0.5
   '@types/node': 18.7.14
+  '@types/plist': 3.0.2
   '@types/tar-fs': 2.0.1
   '@typescript-eslint/eslint-plugin': 5.36.1_lbwfnm54o3pmr3ypeqp3btnera
   '@typescript-eslint/parser': 5.36.1_yqf6kl63nyoq5megxukfnom5rm
@@ -207,6 +211,13 @@ packages:
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
+    dev: true
+
+  /@types/plist/3.0.2:
+    resolution: {integrity: sha512-ULqvZNGMv0zRFvqn8/4LSPtnmN4MfhlPNtJCTpKuIIxGVGZ2rYWzFXrvEBoh9CVyqSE7D6YFRJ1hydLHI6kbWw==}
+    dependencies:
+      '@types/node': 18.7.14
+      xmlbuilder: 15.1.1
     dev: true
 
   /@types/tar-fs/2.0.1:
@@ -2203,6 +2214,14 @@ packages:
       - supports-color
     dev: true
 
+  /plist/3.0.6:
+    resolution: {integrity: sha512-WiIVYyrp8TD4w8yCvyeIr+lkmrGRd5u0VbRnU+tP/aRLxP/YadJUYOMZJ/6hIa3oUyVCsycXvtNRgd5XBJIbiA==}
+    engines: {node: '>=6'}
+    dependencies:
+      base64-js: 1.5.1
+      xmlbuilder: 15.1.1
+    dev: false
+
   /pluralize/8.0.0:
     resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
     engines: {node: '>=4'}
@@ -2909,6 +2928,10 @@ packages:
 
   /wrappy/1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
+
+  /xmlbuilder/15.1.1:
+    resolution: {integrity: sha512-yMqGBqtXyeN1e3TGYvgNgDVZ3j84W4cwkOXQswghol6APgZWaff9lnbvN7MHYJOiXsvGPXtjTYJEiC9J2wv9Eg==}
+    engines: {node: '>=8.0'}
 
   /y18n/5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
