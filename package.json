@@ -3,7 +3,7 @@
 		"dev": "tsup --watch",
 		"package": "pkg -t node18-macos-arm64,node18-macos-x64 dist/bruh.js -o bin/bruh",
 		"build": "tsc --noEmit && tsup && pnpm -s package",
-		"debug": "DEBUG=1 node --enable-source-maps dist/bruh.js"
+		"debug": "node --enable-source-maps dist/bruh.js"
 	},
 	"dependencies": {
 		"plist": "^3.0.6",
