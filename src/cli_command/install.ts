@@ -13,15 +13,18 @@ export default build_command<{
 	yes: boolean;
 }>({
 	name: 'install',
+	usage: '<formula> [formula...]',
 	description: 'Install a formula or cask from brew',
 	flags: [
 		{
 			name: 'reinstall',
+			description: 'Reinstall a formula or cask',
 			long_flag: '--reinstall',
 			short_flag: '-r'
 		},
 		{
 			name: 'yes',
+			description: 'Skip confirmation prompt',
 			long_flag: '--yes',
 			short_flag: '-y'
 		}

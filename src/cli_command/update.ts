@@ -10,10 +10,12 @@ export default build_command<{
 	force: boolean;
 }>({
 	name: 'update',
+	usage: '',
 	description: 'Update the list of available formula or casks',
 	flags: [
 		{
 			name: 'force',
+			description: 'Cleans and rebuilds the entire cache',
 			long_flag: '--force-update',
 			short_flag: '-f'
 		}

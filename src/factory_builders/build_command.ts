@@ -1,11 +1,13 @@
 type command_flag = {
 	name: string;
+	description: string;
 	long_flag: `--${string}`;
 	short_flag: `-${string}`;
 }
 
 type command_options = {
 	name: string;
+	usage: string;
 	description: string;
 	flags: command_flag[];
 }
