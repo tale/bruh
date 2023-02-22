@@ -19,6 +19,7 @@ declare global {
 			github_url: string;
 			support_email: string;
 			user_agent: string;
+			description: string;
 		};
 	}
 }
@@ -104,6 +105,7 @@ export const config = {
 		gh: build_constants.config.github_url,
 		author: build_constants.config.author_name,
 		email: build_constants.config.support_email,
+		description: build_constants.config.description,
 		version: build_constants.version,
 		build_time: build_constants.build_time,
 		commit_hash: build_constants.commit_hash,

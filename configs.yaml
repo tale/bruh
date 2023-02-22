@@ -3,3 +3,4 @@ author_name: 'Aarnav Tale'
 github_url: 'https://github.com/tale/bruh'
 support_email: 'support@tale.me'
 user_agent: 'Bruh/$VER GitState/$COMMIT (+https://tale.me/go/bruh)'
+description: A drop-in replacement for 'brew' on macOS.

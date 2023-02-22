@@ -10,6 +10,7 @@ type config_schema = {
 	github_url: string;
 	support_email: string;
 	user_agent: string;
+	description: string;
 }
 
 const configs_content = await readFile('configs.yaml', 'utf8')
