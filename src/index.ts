@@ -1,6 +1,7 @@
+import { exit } from 'node:process'
+
 import { cli_commands } from 'cli_command'
 import { log } from 'interface'
-import { exit } from 'node:process'
 import { config, perf, preflight } from 'utils'
 
 // This cannot be an ESM style import for some reason
@@ -12,8 +13,13 @@ const execute = async () => {
 
 	// The first two args can always be ignored
 	const runtime_arguments = process.argv.slice(2)
-	const directive = runtime_arguments.shift()
+	let directive = runtime_arguments.shift()
 		?.trim() ?? 'help' // Default to help command if no directive is given
+
+	// Redirect -h and --help to the help command
+	if (directive === '-h' || directive === '--help') {
+		directive = 'help'
+	}
 
 	const command = cli_commands.find(v => v.options.name === directive)
 	if (!command) {

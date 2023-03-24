@@ -32,6 +32,10 @@ export const log = {
 		console.log(`${prefix} ${format}`, ...log_arguments)
 	},
 
+	raw: (format: string, ...log_arguments: unknown[]) => {
+		console.log(format, ...log_arguments)
+	},
+
 	blank: () => {
 		console.log('')
 	},

@@ -19,7 +19,6 @@ specifiers:
   typescript: ^5.0.2
 
 dependencies:
-  openpgp: 5.7.0
   plist: 3.0.6
   tar-fs: 2.1.1
 
@@ -33,6 +32,7 @@ devDependencies:
   eslint: 8.36.0
   eslint-config-tale: 1.0.15_j4766f7ecgqbon3u7zlxn5zszu
   js-yaml: 4.1.0
+  openpgp: 5.7.0
   pkg: 5.8.1
   simple-git: 3.17.0
   tsup: 6.7.0_typescript@5.0.2
@@ -697,7 +697,7 @@ packages:
       inherits: 2.0.4
       minimalistic-assert: 1.0.1
       safer-buffer: 2.1.2
-    dev: false
+    dev: true
 
   /at-least-node/1.0.0:
     resolution: {integrity: sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==}
@@ -730,7 +730,7 @@ packages:
 
   /bn.js/4.12.0:
     resolution: {integrity: sha512-c98Bf3tPniI+scsdk237ku1Dc3ujXQTSgyiPUDEOe7tRkhrqridvh8klBv0HCEso1OLOYcHuCv/cS6DNxKH+ZA==}
-    dev: false
+    dev: true
 
   /brace-expansion/1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -2000,7 +2000,7 @@ packages:
 
   /minimalistic-assert/1.0.1:
     resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}
-    dev: false
+    dev: true
 
   /minimatch/3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
@@ -2161,7 +2161,7 @@ packages:
     engines: {node: '>= 8.0.0'}
     dependencies:
       asn1.js: 5.4.1
-    dev: false
+    dev: true
 
   /optionator/0.9.1:
     resolution: {integrity: sha512-74RlY5FCnhq4jRxVUPKDaRwrVNXMqsGsiW6AJw4XK8hmtm10wC0ypZBLw5IIp85NZMr91+qd1RvvENwg7jjRFw==}
@@ -2557,7 +2557,7 @@ packages:
 
   /safer-buffer/2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
-    dev: false
+    dev: true
 
   /semver/5.7.1:
     resolution: {integrity: sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==}
