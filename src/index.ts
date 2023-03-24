@@ -1,6 +1,6 @@
 import { exit } from 'node:process'
 
-import { cli_commands } from 'cli_command'
+import { find_command } from 'cli_command'
 import { log } from 'interface'
 import { config, perf, preflight } from 'utils'
 
@@ -13,15 +13,11 @@ const execute = async () => {
 
 	// The first two args can always be ignored
 	const runtime_arguments = process.argv.slice(2)
-	let directive = runtime_arguments.shift()
-		?.trim() ?? 'help' // Default to help command if no directive is given
+	const raw_argument = runtime_arguments.shift()
+		?.trim()
 
-	// Redirect -h and --help to the help command
-	if (directive === '-h' || directive === '--help') {
-		directive = 'help'
-	}
-
-	const command = cli_commands.find(v => v.options.name === directive)
+	const directive = raw_argument?.startsWith('-') ? '__global_flags' : raw_argument ?? '__global_flags'
+	const command = find_command(directive)
 	if (!command) {
 		log.error('Unknown Command: %s', directive)
 		exit(1)

@@ -49,6 +49,11 @@ export default build_command({
 	log.raw('Commands:')
 
 	for (const command of cli_commands) {
+		// Hide the global flags handler
+		if (command.options.name === '__global_flags') {
+			continue
+		}
+
 		// Realistically a command shouldn't be longer than 16 characters so we can use that as an offset
 		const spaces = ' '.repeat(16 - command.options.name.length)
 		log.raw('  %s%s%s', ''.bold(command.options.name), spaces, ''.dim(command.options.description))
