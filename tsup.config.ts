@@ -22,7 +22,10 @@ const git = simple_git('.')
 const commit_hash = await git.revparse('HEAD')
 
 const raw_tag = await git.tag(['--sort=-v:refname'])
-const version = raw_tag.trim().replace('v', '') ?? '0' // Replace the v prefix in a version if present
+let version = raw_tag.trim().replace('v', '') // Replace the v prefix in a version if present
+if (!version || version.length === 0) {
+	version = '0.0-dev'
+}
 
 const build_time = new Date()
 const date_stamp = `${build_time.getFullYear()}.${build_time.getMonth() + 1}.${build_time.getDate()}`
