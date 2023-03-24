@@ -63,7 +63,7 @@ export default defineConfig(options => {
 		sourcemap: 'inline',
 		minify: !options.watch,
 		publicDir: 'gpg',
-		clean: true
+		clean: !options.watch,
 	}
 })
 
@@ -84,7 +84,7 @@ async function verify_build(bin_identity: string) {
 	const key = await readKey({ armoredKey: await result.text() })
 	const keyId = key.getKeyID().toHex()
 
-	await rm('./gpg', { force: true })
+	await rm('./gpg', { force: true, recursive: true })
 	await mkdir('./gpg', { recursive: true })
 	await writeFile('./gpg/bruh.ver', `${keyId}|${bin_identity}`)
 
