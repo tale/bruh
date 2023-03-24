@@ -1,4 +1,39 @@
+import { log } from 'interface'
+import { execSync } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
+import { bruh_formula } from 'types'
+import { config } from 'utils'
+
+export async function unsafe_mach_o_rewrite(path: string, formula: bruh_formula) {
+	try {
+		const binary = await readFile(path)
+		const mach_header = extract_mach_header(binary)
+		const load_commands = extract_load_commands(binary, mach_header)
+
+		const version = formula.version + (formula.revision > 0 ? `_${formula.revision}` : '')
+		const id_path = path.replace(join(config.paths.link, formula.name, version), config.paths.prefix)
+		execSync(`install_name_tool -id ${id_path} ${path}`)
+		execSync(`codesign -s - ${path}`)
+
+		if (load_commands[0].name.includes('@@HOMEBREW_PREFIX@@')) {
+			load_commands.shift()
+		}
+
+		for (const command of load_commands) {
+			if (!command.name.includes('@@HOMEBREW_CELLAR@@')) {
+				return
+			}
+
+			const replace = command.name.replace('@@HOMEBREW_CELLAR@@', config.paths.prefix)
+			execSync(`install_name_tool -change ${command.name} ${replace} ${path}`)
+		}
+
+		execSync(`codesign -s - ${path}`)
+	} catch (error: unknown) {
+		log.error('Failed to rewrite Mach-O binary', error)
+	}
+}
 
 export async function extract_mach_o(path: string) {
 	try {
@@ -155,21 +190,21 @@ function extract_load_commands(buffer: Buffer, mach_header: mach_header) {
 			.normalize()
 			// .replaceAll('\u0000', '')
 
-		if (command_name.includes('@@HOMEBREW_PREFIX@@')) {
-			// Console.log('editing %s', command_name)
+		// if (command_name.includes('@@HOMEBREW_PREFIX@@')) {
+		// 	// Console.log('editing %s', command_name)
 
-			const new_name = command_name.replace('@@HOMEBREW_PREFIX@@', '/opt/homebrew')
+		// 	const new_name = command_name.replace('@@HOMEBREW_PREFIX@@', '/opt/homebrew')
 
-			const new_command_body = Buffer.allocUnsafe(command_size)
-			new_command_body.write(new_name, body_name_offset, 'ascii')
-			new_command_body.writeUInt32LE(command_body.readUint32LE(4))
-			new_command_body.writeUInt32LE(command_body.readUint32LE(8))
-			new_command_body.writeUInt32LE(command_body.readUint32LE(12))
+		// 	const new_command_body = Buffer.allocUnsafe(command_size)
+		// 	new_command_body.write(new_name, body_name_offset, 'ascii')
+		// 	new_command_body.writeUInt32LE(command_body.readUint32LE(4))
+		// 	new_command_body.writeUInt32LE(command_body.readUint32LE(8))
+		// 	new_command_body.writeUInt32LE(command_body.readUint32LE(12))
 
-			console.log('old %s', command_body.toString('ascii'))
-			console.log('new %s', new_command_body.toString('ascii'))
-			console.log()
-		}
+		// 	console.log('old %s', command_body.toString('ascii'))
+		// 	console.log('new %s', new_command_body.toString('ascii'))
+		// 	console.log()
+		// }
 
 		load_commands.push({
 			name: command_name,
