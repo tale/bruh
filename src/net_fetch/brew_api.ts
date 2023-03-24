@@ -1,4 +1,4 @@
-import { brew_formula, bruh_formula } from 'types'
+import { type brew_formula, type bruh_formula } from 'types'
 import { config } from 'utils'
 
 export async function fetch_formulas() {

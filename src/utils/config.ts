@@ -1,10 +1,11 @@
-import { log } from 'interface'
 import { accessSync, constants, readFileSync } from 'node:fs'
 import { homedir, release } from 'node:os'
 import { join } from 'node:path'
 import { arch, argv0 } from 'node:process'
+
+import { log } from 'interface'
 import { parse } from 'plist'
-import { system_plist } from 'types'
+import { type system_plist } from 'types'
 
 // Load our build time globals
 declare global {

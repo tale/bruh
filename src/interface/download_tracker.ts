@@ -1,5 +1,5 @@
 import { log } from 'interface'
-import { bruh_formula } from 'types'
+import { type bruh_formula } from 'types'
 
 export function build_iterator(formula_count: number, type: 'download' | 'link') {
 	let count_to = 0

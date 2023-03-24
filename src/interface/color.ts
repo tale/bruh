@@ -55,6 +55,7 @@ Object.defineProperties(String.prototype, {
 export {} // Exporting a fake module allows us to declare global
 
 declare global {
+	// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 	interface String {
 		bold(text: string): string;
 		dim(text: string): string;

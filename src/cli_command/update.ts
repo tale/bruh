@@ -1,9 +1,10 @@
+import { rm } from 'node:fs/promises'
+
 import { build_command } from 'factory_builders'
 import { cache_handler } from 'fs_parser'
 import { log } from 'interface'
 import { brew_api } from 'net_fetch'
-import { rm } from 'node:fs/promises'
-import { bruh_formula } from 'types'
+import { type bruh_formula } from 'types'
 import { config, exit_code } from 'utils'
 
 export default build_command<{

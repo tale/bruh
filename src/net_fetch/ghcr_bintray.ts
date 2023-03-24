@@ -1,7 +1,8 @@
 import { createWriteStream } from 'node:fs'
 import { rm } from 'node:fs/promises'
 import { join } from 'node:path'
-import { bruh_formula } from 'types'
+
+import { type bruh_formula } from 'types'
 import { config } from 'utils'
 
 async function download_preflight(formula: bruh_formula) {

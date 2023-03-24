@@ -1,4 +1,4 @@
-import { bruh_formula } from 'types'
+import { type bruh_formula } from 'types'
 
 class UnresolvedDependencyError extends Error {
 	public hack_dump: {

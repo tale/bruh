@@ -1,11 +1,12 @@
+import { constants } from 'node:fs'
+import { access, mkdir } from 'node:fs/promises'
+
 import { build_command } from 'factory_builders'
 import { bin_tool, install_database } from 'fs_parser'
 import { download_tracker, log, Prompt } from 'interface'
 import { depend_tree } from 'mod_hack'
 import { ghcr_bintray } from 'net_fetch'
-import { constants } from 'node:fs'
-import { access, mkdir } from 'node:fs/promises'
-import { bruh_formula } from 'types'
+import { type bruh_formula } from 'types'
 import { config, exit_code } from 'utils'
 
 export default build_command<{

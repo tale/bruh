@@ -1,6 +1,6 @@
 import { build_error } from 'factory_builders'
 import { cache_handler } from 'fs_parser'
-import { bruh_formula } from 'types'
+import { type bruh_formula } from 'types'
 
 export async function resolve_flat(unresolved_arguments: string[]) {
 	const { resolved, unresolved } = await cache_handler.resolve_deps(unresolved_arguments)

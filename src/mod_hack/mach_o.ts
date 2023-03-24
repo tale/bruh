@@ -1,8 +1,9 @@
-import { log } from 'interface'
 import { execSync } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { bruh_formula } from 'types'
+
+import { log } from 'interface'
+import { type bruh_formula } from 'types'
 import { config } from 'utils'
 
 export async function unsafe_mach_o_rewrite(path: string, formula: bruh_formula) {

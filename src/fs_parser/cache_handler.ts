@@ -1,7 +1,8 @@
 import { createReadStream, createWriteStream } from 'node:fs'
 import { createInterface } from 'node:readline'
 import { createBrotliCompress, createBrotliDecompress } from 'node:zlib'
-import { bruh_formula } from 'types'
+
+import { type bruh_formula } from 'types'
 import { config } from 'utils'
 
 function serialize(formula: bruh_formula) {

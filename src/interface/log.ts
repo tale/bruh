@@ -1,4 +1,4 @@
-import { bruh_formula } from 'types'
+import { type bruh_formula } from 'types'
 import { config } from 'utils'
 
 export const log = {

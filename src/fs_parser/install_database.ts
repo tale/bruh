@@ -2,7 +2,8 @@ import { createReadStream, createWriteStream } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import { createInterface } from 'node:readline'
 import { Transform } from 'node:stream'
-import { bruh_formula } from 'types'
+
+import { type bruh_formula } from 'types'
 import { config } from 'utils'
 
 export async function is_installed(formulas: bruh_formula[]) {
