@@ -59,7 +59,7 @@ export default defineConfig(options => {
 		entry: {
 			bruh: './src/index.ts',
 		},
-		format: ['cjs'],
+		format: ['esm'],
 		target: 'node16',
 		splitting: false,
 		platform: 'node',

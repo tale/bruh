@@ -56,7 +56,7 @@ export default build_command({
 
 		// Realistically a command shouldn't be longer than 16 characters so we can use that as an offset
 		const spaces = ' '.repeat(16 - command.options.name.length)
-		log.raw('  %s%s%s', ''.bold(command.options.name), spaces, ''.dim(command.options.description))
+		log.raw('  %s', ''.bold(command.options.name), spaces, ''.dim(command.options.description))
 	}
 
 	log.blank()
