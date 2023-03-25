@@ -56,14 +56,12 @@ export default build_command({
 		for await (const file of formula.files) {
 			try {
 				await rm(file, { recursive: true, force: true })
-				// Log.info('    Removed %s', ''.dim(file))
+				log.info('  Removed %s', ''.dim(file))
 			} catch {
-				log.warning('    Unable to remove %s', ''.dim(file))
+				log.warning('  Unable to remove %s', ''.dim(file))
 			}
 		}
 	}
-
-	console.log(to_uninstall.map(formula => formula.name))
 
 	await local_state.mark_as_uninstalled(...to_uninstall.map(formula => formula.name))
 	return exit_code.success
