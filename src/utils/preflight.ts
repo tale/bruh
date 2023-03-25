@@ -5,6 +5,7 @@ import { config, perf } from 'utils'
 
 export async function preflight() {
 	perf.start('preflight')
+	process.title = 'bruh'
 
 	try {
 		// eslint-disable-next-line no-bitwise
