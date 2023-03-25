@@ -4,6 +4,7 @@ import __global_flags from './global_flags'
 import help from './help'
 import install from './install'
 import list from './list'
+import uninstall from './uninstall'
 import update from './update'
 
 export const cli_commands = new Array<command_type>(
@@ -11,7 +12,8 @@ export const cli_commands = new Array<command_type>(
 	install,
 	update,
 	help,
-	list
+	list,
+	uninstall
 )
 
 export function find_command(name: string): command_type | undefined {

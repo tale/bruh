@@ -1,7 +1,7 @@
 import { F_OK, R_OK } from 'node:constants'
 import { createReadStream } from 'node:fs'
 import { access, readdir, rm } from 'node:fs/promises'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import { createGunzip } from 'node:zlib'
 
 import { extract } from 'tar-fs'
@@ -51,8 +51,9 @@ export async function link(formula: bruh_formula) {
 
 	const file_entries = await readdir(directory, { withFileTypes: true })
 	const recursed_file_paths = file_entries.map(async entry => {
-		if (!entry.isDirectory() || !linkable_directories.has(entry.name)) {
-			return [entry.name]
+		// We need to check if the entry includes / otherwise files in the root of the tarball will be skipped
+		if (!entry.isDirectory() || (entry.name.includes('/') && !linkable_directories.has(entry.name))) {
+			return []
 		}
 
 		const paths = await recurse_link(entry.name, directory, formula)
@@ -87,7 +88,7 @@ async function recurse_link(file: string, path: string, formula: bruh_formula) {
 		// await MachO.rewritePaths(toPath, formula)
 
 		// await mach_o.extract_mach_o(from_path)
-		paths.push(from_path) // TODO: Make this to_path
+		paths.push(resolve(from_path)) // TODO: Make this to_path
 	})
 
 	const recursed_paths = await Promise.all(operations)
