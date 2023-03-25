@@ -1,5 +1,4 @@
-import { createReadStream, createWriteStream } from 'node:fs'
-import { writeFile } from 'node:fs/promises'
+import { createReadStream, createWriteStream, existsSync } from 'node:fs'
 import { createInterface } from 'node:readline'
 import { Transform } from 'node:stream'
 
@@ -7,7 +6,9 @@ import { type bruh_formula } from 'types'
 import { config } from 'utils'
 
 export async function is_installed(formulas: bruh_formula[]) {
-	await writeFile(config.paths.install, '')
+	if (!existsSync(config.paths.install)) {
+		return new WeakMap<bruh_formula, boolean>(formulas.map(formula => [formula, false]))
+	}
 
 	const reader = createReadStream(config.paths.install)
 	const streamer = createInterface(reader)
@@ -27,6 +28,62 @@ export async function is_installed(formulas: bruh_formula[]) {
 		})
 			.on('close', () => {
 				resolve(formula_map)
+			})
+			.on('SIGINT', reject)
+
+		reader.on('error', reject)
+	})
+}
+
+type bruh_formula_local = bruh_formula & {
+	files?: string[];
+}
+
+export async function get_installed(pull_files = false) {
+	const reader = createReadStream(config.paths.install)
+	const streamer = createInterface(reader)
+	const formulas = new Set<bruh_formula_local>()
+
+	return new Promise<Set<bruh_formula_local>>((resolve, reject) => {
+		let current_formula: bruh_formula | undefined
+		let current_files = new Array<string>()
+
+		streamer.on('line', (line: string) => {
+			if (line.startsWith('##bruh_start_def##')) {
+				const formula = JSON.parse(line.split(' - ')[1]) as bruh_formula
+				current_formula = formula
+			}
+
+			// The rest of the code paths are for getting files
+			// This is only done when the formula_name is supplied
+			if (!pull_files) {
+				if (current_formula) {
+					formulas.add(current_formula)
+				}
+
+				return
+			}
+
+			if (line.startsWith('##bruh_end_def##')) {
+				if (!current_formula) {
+					return
+				}
+
+				formulas.add({
+					...current_formula,
+					files: current_files
+				})
+
+				current_formula = undefined
+				current_files = new Array<string>()
+			}
+
+			if (current_formula) {
+				current_files = line.split(',')
+			}
+		})
+			.on('close', () => {
+				resolve(formulas)
 			})
 			.on('SIGINT', reject)
 

@@ -3,13 +3,15 @@ import { type command_type } from 'factory_builders'
 import __global_flags from './global_flags'
 import help from './help'
 import install from './install'
+import list from './list'
 import update from './update'
 
 export const cli_commands = new Array<command_type>(
 	__global_flags,
 	install,
 	update,
-	help
+	help,
+	list
 )
 
 export function find_command(name: string): command_type | undefined {
