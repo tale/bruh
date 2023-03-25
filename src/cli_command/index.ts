@@ -1,5 +1,6 @@
 import { type command_type } from 'factory_builders'
 
+import autoremove from './autoremove'
 import __global_flags from './global_flags'
 import help from './help'
 import install from './install'
@@ -13,7 +14,8 @@ export const cli_commands = new Array<command_type>(
 	update,
 	help,
 	list,
-	uninstall
+	uninstall,
+	autoremove
 )
 
 export function find_command(name: string): command_type | undefined {
