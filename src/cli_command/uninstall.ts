@@ -1,4 +1,5 @@
 import { rm } from 'node:fs/promises'
+import { join } from 'node:path'
 
 import { build_command } from 'factory_builders'
 import { local_state } from 'fs_parser'
@@ -54,13 +55,17 @@ export default build_command({
 		}
 
 		for await (const file of formula.files) {
+			const real_file = join(formula.files_prefix, file)
+
 			try {
-				await rm(file, { recursive: true, force: true })
-				log.info('  Removed %s', ''.dim(file))
+				await rm(real_file, { recursive: true, force: true })
 			} catch {
-				log.warning('  Unable to remove %s', ''.dim(file))
+				log.warning('Unable to remove %s', ''.dim(file))
 			}
 		}
+
+		log.info('Removed files at %s', ''.dim(formula.files_prefix))
+		log.blank()
 	}
 
 	await local_state.mark_as_uninstalled(...to_uninstall.map(formula => formula.name))
