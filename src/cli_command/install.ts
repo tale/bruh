@@ -3,7 +3,7 @@ import { access, mkdir } from 'node:fs/promises'
 
 import { build_command } from 'factory_builders'
 import { bin_tool, local_state } from 'fs_parser'
-import { download_tracker, log, Prompt } from 'interface'
+import { download_tracker, log } from 'interface'
 import { depend_tree } from 'mod_hack'
 import { ghcr_bintray } from 'net_fetch'
 import { type bruh_formula, type bruh_formula_state } from 'types'
@@ -11,7 +11,6 @@ import { config, exit_code } from 'utils'
 
 export default build_command<{
 	reinstall: boolean;
-	yes: boolean;
 }>({
 	name: 'install',
 	usage: '<formula> [formula...]',
@@ -22,12 +21,6 @@ export default build_command<{
 			description: 'Reinstall a formula or cask',
 			long_flag: '--reinstall',
 			short_flag: '-r'
-		},
-		{
-			name: 'yes',
-			description: 'Skip confirmation prompt',
-			long_flag: '--yes',
-			short_flag: '-y'
 		}
 	]
 }, async (flags, cli_arguments) => {
@@ -50,7 +43,7 @@ export default build_command<{
 
 	// Check for preinstalled formulas
 	const pre_installed = new Array<string>()
-	const install_database_checks = await local_state.is_installed(resolved)
+	const installed_formulas = await local_state.get_installed()
 
 	for (const formula of resolved) {
 		// Don't run expensive calculations if we already allow reinstalling
@@ -58,7 +51,8 @@ export default build_command<{
 			continue
 		}
 
-		if (install_database_checks.has(formula) && install_database_checks.get(formula)) {
+		const already_installed = installed_formulas.find(installed => installed.name === formula.name)
+		if (already_installed) {
 			pre_installed.push(formula.name)
 		}
 	}
@@ -117,12 +111,6 @@ export default build_command<{
 
 	log.blank()
 
-	// Fast but hacky deduplication sequence
-	const formula_filter_predicate = ((formula: bruh_formula, index: number, array: bruh_formula[]) =>
-		// Removes duplicates from the array based on the formula name
-		array.findIndex(subformula => subformula.name === formula.name) === index
-	)
-
 	const printable_top_level_installs = [...top_level_installs]
 		.filter((formula, index, array) => formula_filter_predicate(formula, index, array))
 		.map(formula => formula.name)
@@ -137,14 +125,6 @@ export default build_command<{
 
 	if (dependency_installs.size > 0) {
 		log.info('The following additional packages will be installed: %s', ''.dim(printable_dependency_installs.join(' ')))
-	}
-
-	if (!flags.yes) {
-		const result = await Prompt.confirm('Proceed with the installation?')
-		if (!result) {
-			log.error('Aborting')
-			return
-		}
 	}
 
 	const download_list = [...top_level_installs, ...dependency_installs]
@@ -177,3 +157,10 @@ export default build_command<{
 
 	await local_state.mark_as_installed(...install_paths)
 })
+
+// Fast but hacky deduplication sequence
+const formula_filter_predicate = ((formula: bruh_formula, index: number, array: bruh_formula[]) =>
+// Removes duplicates from the array based on the formula name
+	array.findIndex(subformula => subformula.name === formula.name) === index
+)
+
