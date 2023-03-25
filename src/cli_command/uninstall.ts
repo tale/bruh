@@ -1,7 +1,7 @@
 import { rm } from 'node:fs/promises'
 
 import { build_command } from 'factory_builders'
-import { install_database } from 'fs_parser'
+import { local_state } from 'fs_parser'
 import { log } from 'interface'
 import { exit_code } from 'utils'
 
@@ -23,7 +23,7 @@ export default build_command({
 	}
 
 	// Get all installed packages and pull their files list
-	const installed = [...await install_database.get_installed(true)]
+	const installed = [...await local_state.get_installed()]
 	const not_found = new Array<string>()
 	const to_uninstall: typeof installed = []
 
@@ -56,13 +56,15 @@ export default build_command({
 		for await (const file of formula.files) {
 			try {
 				await rm(file, { recursive: true, force: true })
-				log.info('    Removed %s', ''.dim(file))
+				// Log.info('    Removed %s', ''.dim(file))
 			} catch {
 				log.warning('    Unable to remove %s', ''.dim(file))
 			}
 		}
 	}
 
-	await install_database.purge_formulas(to_uninstall)
+	console.log(to_uninstall.map(formula => formula.name))
+
+	await local_state.mark_as_uninstalled(...to_uninstall.map(formula => formula.name))
 	return exit_code.success
 })

@@ -1,5 +1,5 @@
 import { build_command } from 'factory_builders'
-import { install_database } from 'fs_parser'
+import { local_state } from 'fs_parser'
 import { log } from 'interface'
 import { exit_code } from 'utils'
 
@@ -10,13 +10,13 @@ export default build_command({
 	flags: []
 }, async (_flags, cli_arguments) => {
 	if (cli_arguments.length === 0) {
-		const installed = await install_database.get_installed()
+		const installed = await local_state.get_installed()
 		for (const formula of installed) {
 			log.info(formula.name)
 		}
 	}
 
-	const installed = [...await install_database.get_installed(true)]
+	const installed = [...await local_state.get_installed(true)]
 
 	for await (const formula of cli_arguments) {
 		const search = installed.find(f => f.name === formula)

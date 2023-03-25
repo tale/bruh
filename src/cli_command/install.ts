@@ -2,11 +2,11 @@ import { constants } from 'node:fs'
 import { access, mkdir } from 'node:fs/promises'
 
 import { build_command } from 'factory_builders'
-import { bin_tool, install_database } from 'fs_parser'
+import { bin_tool, local_state } from 'fs_parser'
 import { download_tracker, log, Prompt } from 'interface'
 import { depend_tree } from 'mod_hack'
 import { ghcr_bintray } from 'net_fetch'
-import { type bruh_formula } from 'types'
+import { type bruh_formula, type bruh_formula_state } from 'types'
 import { config, exit_code } from 'utils'
 
 export default build_command<{
@@ -50,7 +50,7 @@ export default build_command<{
 
 	// Check for preinstalled formulas
 	const pre_installed = new Array<string>()
-	const install_database_checks = await install_database.is_installed(resolved)
+	const install_database_checks = await local_state.is_installed(resolved)
 
 	for (const formula of resolved) {
 		// Don't run expensive calculations if we already allow reinstalling
@@ -154,7 +154,7 @@ export default build_command<{
 	const download_iterate = download_tracker.build_iterator(download_list.length, 'download')
 	const link_iterate = download_tracker.build_iterator(download_list.length, 'link')
 
-	const install_paths = new Map<bruh_formula, string[]>()
+	const install_paths = new Array<bruh_formula_state>()
 	const install_tasks = download_list.map(async formula => {
 		await ghcr_bintray.download(formula)
 		download_iterate(formula)
@@ -164,10 +164,16 @@ export default build_command<{
 
 	for await (const formula of download_list) {
 		await bin_tool.unpack(formula)
-		const paths = await bin_tool.link(formula)
-		install_paths.set(formula, paths)
+		const { paths, directory } = await bin_tool.link(formula)
+		install_paths.push({
+			...formula,
+			linked: resolved.includes(formula),
+			files: paths,
+			files_prefix: directory
+		})
+
 		link_iterate(formula)
 	}
 
-	await install_database.flush_formulas(install_paths)
+	await local_state.mark_as_installed(...install_paths)
 })

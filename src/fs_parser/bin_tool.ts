@@ -60,8 +60,16 @@ export async function link(formula: bruh_formula) {
 		return paths
 	})
 
-	const paths = await Promise.all(recursed_file_paths)
-	return paths.flat()
+	const raw_paths = await Promise.all(recursed_file_paths)
+
+	const paths = raw_paths
+		.flat()
+		.map(path => path.replace(directory, ''))
+
+	return {
+		paths,
+		directory
+	}
 }
 
 async function recurse_link(file: string, path: string, formula: bruh_formula) {

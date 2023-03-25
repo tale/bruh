@@ -5,3 +5,10 @@ export type bruh_formula = {
 	dependencies: string[];
 	revision: number;
 }
+
+export type bruh_formula_state = bruh_formula & {
+	linked: boolean;
+	files: string[];
+	files_prefix: string;
+}
+
