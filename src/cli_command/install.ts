@@ -145,9 +145,10 @@ export default build_command<{
 	for await (const formula of download_list) {
 		await bin_tool.unpack(formula)
 		const { paths, directory } = await bin_tool.link(formula)
+
 		install_paths.push({
 			...formula,
-			linked: resolved.includes(formula),
+			linked: cli_arguments.includes(formula.name),
 			files: paths,
 			files_prefix: directory
 		})
