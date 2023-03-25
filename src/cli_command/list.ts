@@ -3,20 +3,33 @@ import { local_state } from 'fs_parser'
 import { log } from 'interface'
 import { exit_code } from 'utils'
 
-export default build_command({
+export default build_command<{
+	all: boolean;
+}>({
 	name: 'list',
 	usage: '[formula]',
 	description: 'List all installed formulae or the files of a specific formula',
-	flags: []
-}, async (_flags, cli_arguments) => {
+	flags: [
+		{
+			name: 'all',
+			description: 'List all installed formulae, including unlinked ones',
+			short_flag: '-a',
+			long_flag: '--all'
+		}
+	]
+}, async (flags, cli_arguments) => {
 	if (cli_arguments.length === 0) {
 		const installed = await local_state.get_installed()
 		for (const formula of installed) {
+			if (!flags.all && !formula.linked) {
+				continue
+			}
+
 			log.info(formula.name)
 		}
 	}
 
-	const installed = [...await local_state.get_installed(true)]
+	const installed = [...await local_state.get_installed()]
 
 	for await (const formula of cli_arguments) {
 		const search = installed.find(f => f.name === formula)
