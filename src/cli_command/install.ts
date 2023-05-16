@@ -85,8 +85,8 @@ export default build_command<{
 
 	// Exit early if nothing is resolved
 	if (resolved.length === 0) {
-		log.warning('Unable to resolve the following packages: %s', ''.dim(unresolved.join(' ')))
-		log.warning('Try running %s to resolve this.', ''.bold(`${config.bin_entry} update`))
+		log.error('Unable to resolve the following packages: %s', ''.dim(unresolved.join(' ')))
+		log.error('Try running %s to resolve this.', ''.bold(`${config.bin_entry} update`))
 		return exit_code.error
 	}
 
