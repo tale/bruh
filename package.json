@@ -19,7 +19,7 @@
 		"eslint": "^8.36.0",
 		"eslint-config-tale": "^1.0.15",
 		"js-yaml": "^4.1.0",
-		"openpgp": "^5.7.0",
+		"openpgp": "^5.10.1",
 		"pkg": "^5.8.1",
 		"simple-git": "^3.17.0",
 		"tsup": "^6.7.0",
