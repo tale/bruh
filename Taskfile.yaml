@@ -1,0 +1,29 @@
+version: '3'
+tasks:
+  build:
+    desc: 'Builds a single-executable application'
+    env:
+      FORCE_COLOR: 1
+    preconditions:
+      - cmd: node --version | grep -q 'v20'
+        msg: 'Node.js LTS v20 is required'
+      - cmd: rm -rf dist/bruh
+        msg: 'Failed to remove dist/bruh'
+      - cmd: rm -rf dist/bruh.blob
+        msg: 'Failed to remove dist/bruh.blob'
+    cmds:
+      - cmd: pnpm build
+      - cmd: node --experimental-sea-config sea-config.json
+      - cmd: cp -Lr $(command -v node) dist/bruh
+      - cmd: |
+          sudo npx -y postject dist/bruh NODE_SEA_BLOB dist/bruh.blob \
+          --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
+        platforms: [linux]
+      - cmd: |
+          sudo npx -y postject dist/bruh NODE_SEA_BLOB dist/bruh.blob \
+          --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2 \
+          --macho-segment-name NODE_SEA
+        platforms: [darwin]
+      - cmd: codesign -s - dist/bruh
+        platforms: [darwin]
+

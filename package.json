@@ -1,8 +1,7 @@
 {
 	"scripts": {
 		"dev": "tsup --watch",
-		"package": "pkg -t node18-macos-arm64,node18-macos-x64 dist/bruh.js -o bin/bruh",
-		"build": "tsc --noEmit && tsup && pnpm -s package",
+		"build": "tsc --noEmit && tsup",
 		"debug": "node --enable-source-maps dist/bruh.js"
 	},
 	"dependencies": {
@@ -20,7 +19,6 @@
 		"eslint-config-tale": "^1.0.16",
 		"js-yaml": "^4.1.0",
 		"openpgp": "^5.9.0",
-		"pkg": "^5.8.1",
 		"simple-git": "^3.18.0",
 		"tsup": "^6.7.0",
 		"typescript": "^5.0.4"

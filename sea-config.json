@@ -1,0 +1,6 @@
+{
+	"main": "dist/bruh.js",
+	"output": "dist/bruh.blob",
+	"disableExperimentalSEAWarning": true,
+	"useCodeCache": true
+}
