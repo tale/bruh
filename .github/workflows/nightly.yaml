@@ -45,7 +45,7 @@ jobs:
         id: upload
         uses: actions/upload-artifact@v4
         with:
-          name: bruh-${{ matrix.os }}
+          name: bruh-${{ matrix.os }}-${{ matrix.arch }}
           path: dist/bruh
 
 
