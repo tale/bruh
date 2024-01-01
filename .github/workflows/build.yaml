@@ -44,5 +44,6 @@ jobs:
           artifacts: 'dist/bruh'
           replacesArtifacts: false
           commit: ${{ github.sha }}
+          tag: ${{ github.ref }}
           name: Nightly Release (${{ github.ref }})
           prerelease: true
