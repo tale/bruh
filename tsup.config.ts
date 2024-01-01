@@ -74,52 +74,56 @@ export default defineConfig(options => {
 })
 
 async function verify_build(bin_identity: string) {
-	const result = await fetch('https://keys.openpgp.org/vks/v1/by-email/aarnavtale@icloud.com', {
-		method: 'GET',
-		redirect: 'follow',
-		headers: {
-			'User-Agent': config.user_agent
-		}
-	})
-
-	if (!result.ok) {
-		console.error('Failed to fetch public key from OpenPGP server')
-		return false
-	}
-
-	const key = await readKey({ armoredKey: await result.text() })
-	const keyId = key.getKeyID().toHex()
-
-	await rm('./gpg', { force: true, recursive: true })
-	await mkdir('./gpg', { recursive: true })
-	await writeFile('./gpg/bruh.ver', `${keyId}|${bin_identity}`)
-
-	const commands = [
-		'gpg --sign',
-		'-u', key.getKeyID().toHex(),
-		'--armor',
-		'--output', './gpg/bruh.sig',
-		'./gpg/bruh.ver'
-	]
-
-	execSync(commands.join(' '))
-	const sig = await readFile('./gpg/bruh.sig', 'utf8')
-
-	const message = await readMessage({
-		armoredMessage: sig
-	})
-
-	const request = await verify({
-		message,
-		verificationKeys: key
-	})
-
-	const { verified } = request.signatures[0];
 	try {
-		await verified; // throws on invalid signature
-		return true
-	} catch (e) {
-		console.log('Signature could not be verified: ' + e.message);
+		const result = await fetch('https://keys.openpgp.org/vks/v1/by-email/aarnavtale@icloud.com', {
+			method: 'GET',
+			redirect: 'follow',
+			headers: {
+				'User-Agent': config.user_agent
+			}
+		})
+
+		if (!result.ok) {
+			console.error('Failed to fetch public key from OpenPGP server')
+			return false
+		}
+
+		const key = await readKey({ armoredKey: await result.text() })
+		const keyId = key.getKeyID().toHex()
+
+		await rm('./gpg', { force: true, recursive: true })
+		await mkdir('./gpg', { recursive: true })
+		await writeFile('./gpg/bruh.ver', `${keyId}|${bin_identity}`)
+
+		const commands = [
+			'gpg --sign',
+			'-u', key.getKeyID().toHex(),
+			'--armor',
+			'--output', './gpg/bruh.sig',
+			'./gpg/bruh.ver'
+		]
+
+		execSync(commands.join(' '))
+		const sig = await readFile('./gpg/bruh.sig', 'utf8')
+
+		const message = await readMessage({
+			armoredMessage: sig
+		})
+
+		const request = await verify({
+			message,
+			verificationKeys: key
+		})
+
+		const { verified } = request.signatures[0];
+		try {
+			await verified; // throws on invalid signature
+			return true
+		} catch (e) {
+			console.log('Signature could not be verified: ' + e.message);
+			return false
+		}
+	} catch (error) {
 		return false
 	}
 }
