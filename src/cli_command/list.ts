@@ -1,7 +1,9 @@
+import { join } from 'node:path'
+
 import { build_command } from 'factory_builders'
 import { local_state } from 'fs_parser'
 import { log } from 'interface'
-import { exit_code } from 'utils'
+import { config, exit_code } from 'utils'
 
 export default build_command<{
 	all: boolean;
@@ -41,7 +43,7 @@ export default build_command<{
 
 		log.info('%s@%s', ''.bold(search.name), ''.dim(search.version))
 		for (const file of search.files ?? []) {
-			log.raw('  %s', file)
+			log.raw('  %s', join(config.paths.prefix, file))
 		}
 
 		log.blank()
