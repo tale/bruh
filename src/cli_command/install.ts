@@ -136,11 +136,20 @@ export default build_command<{
 
 	const install_paths = new Array<bruh_formula_state>()
 	const install_tasks = download_list.map(async formula => {
-		await ghcr_bintray.download(formula)
-		download_iterate(formula)
+		try {
+			await ghcr_bintray.download(formula)
+			download_iterate(formula)
+		} catch {
+			log.error('Failed to download %s', ''.bold(formula.name))
+			throw new Error('Failed to download')
+		}
 	})
 
-	await Promise.all(install_tasks)
+	const result = await Promise.allSettled(install_tasks)
+	if (result.some(promise => promise.status === 'rejected')) {
+		log.error('Failed to download one or more packages. Exiting...')
+		return exit_code.error
+	}
 
 	for await (const formula of download_list) {
 		await bin_tool.unpack(formula)
