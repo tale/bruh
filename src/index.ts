@@ -13,8 +13,7 @@ const execute = async () => {
 
 	// The first two args can always be ignored
 	const runtime_arguments = process.argv.slice(2)
-	const raw_argument = runtime_arguments.shift()
-		?.trim()
+	const raw_argument = runtime_arguments[0]?.trim()
 
 	const directive = raw_argument?.startsWith('-') ? '__global_flags' : raw_argument ?? '__global_flags'
 	const command = find_command(directive)
@@ -23,9 +22,21 @@ const execute = async () => {
 		exit(1)
 	}
 
+	// Remove the directive from the runtime arguments
+	// This only applies if the directive is not __global_flags
+	if (directive !== '__global_flags') {
+		runtime_arguments.shift()
+	}
+
 	const flags = Object.fromEntries(command.options.flags.map(flag => {
-		if (runtime_arguments.includes(flag.short_flag) || runtime_arguments.includes(flag.long_flag)) {
-			const index = runtime_arguments.indexOf(flag.short_flag) ?? runtime_arguments.find(v => v === flag.long_flag)
+		if (flag.short_flag && runtime_arguments.includes(flag.short_flag)) {
+			const index = runtime_arguments.indexOf(flag.short_flag)
+			runtime_arguments.splice(index, 1)
+			return [flag.name, true]
+		}
+
+		if (flag.long_flag && runtime_arguments.includes(flag.long_flag)) {
+			const index = runtime_arguments.indexOf(flag.long_flag)
 			runtime_arguments.splice(index, 1)
 			return [flag.name, true]
 		}
