@@ -32,7 +32,12 @@ export default build_command({
 		log.raw('Flags:')
 
 		for (const flag of options.flags) {
-			log.raw('  %s %s %s', ''.bold(flag.short_flag), ''.bold(flag.long_flag), ''.dim(flag.description))
+			if (flag.short_flag) {
+				log.raw('  %s %s %s', ''.bold(flag.short_flag), ''.bold(flag.long_flag), ''.dim(flag.description))
+				continue
+			}
+
+			log.raw('  %s %s', ''.bold(flag.long_flag), ''.dim(flag.description))
 		}
 
 		return exit_code.success
