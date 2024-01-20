@@ -7,6 +7,7 @@ export default build_command<{
 	help: boolean;
 	version: boolean;
 	cache: boolean;
+	prefix: boolean;
 }>({
 	name: '__global_flags',
 	usage: '',
@@ -28,6 +29,11 @@ export default build_command<{
 			name: 'cache',
 			description: 'Display bruh\'s download cache. (Does not fully implement brew --cache)',
 			long_flag: '--cache'
+		},
+		{
+			name: 'prefix',
+			description: 'Display bruh\'s install prefix. (Does not fully implement brew --prefix)',
+			long_flag: '--prefix'
 		}
 	]
 }, async (flags, cli_arguments) => {
@@ -41,6 +47,11 @@ export default build_command<{
 
 	if (flags.cache) {
 		log.raw(config.paths.cache)
+		return exit_code.success
+	}
+
+	if (flags.prefix) {
+		log.raw(config.paths.prefix)
 		return exit_code.success
 	}
 
