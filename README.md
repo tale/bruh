@@ -7,7 +7,7 @@ This is a complete 1:1 feature-parity tool of `brew`, the popular package manage
 I'll be uploading setup binaries here soon. They will be accessible via GitHub Actions build artifacts. Until then, cloning the project, installing dependencies, and compiling it yourself is probably the best way to go.
 
 ## Decisions
-`bruh` is written purely in TypeScript and compiled into a binary using the awesome tool [vercel/pkg](https://github.com/vercel/pkg). This was mostly because I enjoy writing TypeScript and I wanted to prove that application design is just as important as the platform an application is built on.
+`bruh` is written purely in TypeScript and compiled into a binary using [Node.js Single Executable Applications](https://nodejs.org/api/single-executable-applications.html). This was mostly because I enjoy writing TypeScript and I wanted to prove that application design is just as important as the platform an application is built on.
 
 Using promises, `bruh` is very fast and outperforms brew by a massive margin and most likely can outperform APT because of how the event-loop in Node.js works and concurrent tasks that I've chosen to opt into as a reliability trade-off.
 
@@ -19,4 +19,4 @@ The project mostly serves for my own exploration of the limitations of Node.js, 
 ## Benchmarks
 Coming soon-ish?
 
-> Copyright (c) 2022 Aarnav Tale.
+> Copyright (c) 2024 Aarnav Tale.
