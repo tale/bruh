@@ -9,12 +9,22 @@ jobs:
     name: Build
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        arch: [x64, arm64]
+        os: [ubuntu-latest, macos-latest, macos-14]
     runs-on: ${{ matrix.os }}
     outputs:
       artifact: ${{ steps.upload.outputs.artifact-id }}
+
     steps:
+      - name: Determine architecture
+        run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            OS_NAME="linux-x86_64"
+          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+            OS_NAME="macos-x86_64"
+          elif [ "${{ matrix.os }}" == "macos-14" ]; then
+            OS_NAME="macos-aarch64"
+          fi
+          echo "arch_name=${OS_NAME}" >> $GITHUB_ENV
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -45,7 +55,7 @@ jobs:
         id: upload
         uses: actions/upload-artifact@v4
         with:
-          name: bruh-${{ matrix.os }}-${{ matrix.arch }}
+          name: bruh-${{ env.arch_name }}
           path: dist/bruh
 
 
