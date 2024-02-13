@@ -4,7 +4,7 @@
 This is a complete 1:1 feature-parity tool of `brew`, the popular package manager used on macOS devices. This project mostly exists for fun and shouldn't be used in any sort of official capacity. Personally, I use it over `brew` when running packaging commands on my system, but proceed with caution.
 
 ## Setup/Installation
-I'll be uploading setup binaries here soon. They will be accessible via GitHub Actions build artifacts. Until then, cloning the project, installing dependencies, and compiling it yourself is probably the best way to go.
+Install the latest version via [nightly.link](https://nightly.link/tale/bruh/workflows/nightly.yaml/main) or from the [Actions](https://github.com/tale/bruh/actions/workflows/nightly.yaml) tab to view older nightlies if necessary.
 
 ## Decisions
 `bruh` is written purely in TypeScript and compiled into a binary using [Node.js Single Executable Applications](https://nodejs.org/api/single-executable-applications.html). This was mostly because I enjoy writing TypeScript and I wanted to prove that application design is just as important as the platform an application is built on.
