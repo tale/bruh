@@ -21,7 +21,7 @@ export async function preflight(fix = true) {
 			await sudo('doctor').catch(() => {
 				log.blank()
 				log.error('Unable to acquire privileges to fix the prefix')
-				log.info('Try running %s to resolve this.', ''.bold(`sudo ${config.bin_entry} doctor`))
+				log.info('Try running %s again to resolve this.', ''.bold(`${config.bin_entry}`))
 
 				exit(exit_code.error)
 			})

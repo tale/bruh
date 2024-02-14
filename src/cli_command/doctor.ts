@@ -22,6 +22,7 @@ export default build_command({
 			await mkdir(config.paths.prefix, { recursive: true })
 			await chmod(config.paths.prefix, 0o777)
 			await mkdir(config.paths.cache)
+			return exit_code.success
 		} catch {
 			return exit_code.error
 		}

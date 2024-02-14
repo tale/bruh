@@ -5,6 +5,7 @@ import { exec } from 'node:child_process'
 import { argv, geteuid } from 'node:process'
 
 import { log } from 'interface'
+import { config } from 'utils'
 
 export async function sudo(command: string) {
 	if (geteuid && geteuid() === 0) {
@@ -14,10 +15,10 @@ export async function sudo(command: string) {
 	log.info('Attempting to fix the issue with root privileges')
 	log.info('If prompted by %s, please enter your password', ''.bold('osascript'))
 
-	let entrypoint = argv[0]
+	let entrypoint = config.bin_entry
 
 	// Ran in development, args need to be different
-	if (argv[0].includes('node')) {
+	if (entrypoint.includes('node')) {
 		// Find the entire command needed to execute the script
 		// This is needed because the script is ran with ts-node
 		for (const element of argv.slice(1)) {
@@ -48,5 +49,4 @@ export async function sudo(command: string) {
 		})
 	})
 }
-
 
