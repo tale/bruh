@@ -5,13 +5,10 @@ import { build_command } from 'factory_builders'
 import { log } from 'interface'
 import { config, exit_code, preflight } from 'utils'
 
-const description = `Checks the system for common issues.
-Note: If run as root, it will attempt to fix any file permission issues.`
-
 export default build_command({
 	name: 'doctor',
 	usage: '',
-	description,
+	description: 'Checks the system for common issues.',
 	flags: []
 }, async () => {
 	const good = await preflight()
