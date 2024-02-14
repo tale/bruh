@@ -75,3 +75,36 @@ export async function resolve_deps(deps: string[]) {
 		reader.on('error', reject)
 	})
 }
+
+export async function search_deps(deps: string[]) {
+	const decompressor = createBrotliDecompress()
+	const reader = createReadStream(config.paths.tiffy)
+	const streamer = createInterface(decompressor)
+
+	const resolved_deps = new Array<string>()
+	reader.pipe(decompressor)
+
+	await new Promise<void>((resolve, reject) => {
+		streamer.on('line', (line: string) => {
+			for (const dep of deps) {
+				// All caches start with the package name
+				if (!line.startsWith(dep)) {
+					continue
+				}
+
+				// This code deserializes the cache line and gets the dependency as an object
+				const [name] = line.split('|')
+				resolved_deps.push(name)
+			}
+		})
+			.on('close', () => {
+				resolve()
+			})
+			.on('SIGINT', reject)
+
+		decompressor.on('error', reject)
+		reader.on('error', reject)
+	})
+
+	return resolved_deps
+}

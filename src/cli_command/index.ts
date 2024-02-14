@@ -6,6 +6,7 @@ import __global_flags from './global_flags'
 import help from './help'
 import install from './install'
 import list from './list'
+import search from './search'
 import uninstall from './uninstall'
 import update from './update'
 
@@ -17,7 +18,8 @@ export const cli_commands = new Array<command_type>(
 	list,
 	uninstall,
 	autoremove,
-	doctor
+	doctor,
+	search
 )
 
 export function find_command(name: string): command_type | undefined {
