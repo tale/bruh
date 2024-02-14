@@ -25,7 +25,7 @@ declare global {
 	}
 }
 
-const prefix = join(homedir(), 'Library', 'Application Support', 'Bruh')
+const prefix = join('/opt', 'bruh')
 
 function get_macos_meta() {
 	try {

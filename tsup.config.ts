@@ -5,7 +5,8 @@ import simple_git from 'simple-git'
 import { readKey, readMessage, verify } from 'openpgp'
 import { execSync } from 'node:child_process'
 
-const header = `// MIT License - Copyright (c) ${new Date().getFullYear()}, Aarnav Tale.`
+const header = `#!/usr/bin/env node
+// MIT License - Copyright (c) ${new Date().getFullYear()}, Aarnav Tale.`
 
 type config_schema = {
 	author_name: string;
@@ -70,6 +71,7 @@ export default defineConfig(options => {
 		minify: !options.watch,
 		publicDir: 'gpg',
 		clean: !options.watch,
+		onSuccess: 'chmod +x dist/bruh.js'
 	}
 })
 
